@@ -1,0 +1,61 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.000
+This is a synthetic pre-flight QA demo for a Shopify brand.
+
+00:00:04.000 --> 00:00:09.000
+It is not connected to a client Gorgias account, and it is not a client case study.
+
+00:00:09.000 --> 00:00:12.000
+The commercial scope is deliberately narrow.
+
+00:00:12.000 --> 00:00:17.000
+One Shopify store, one Gorgias inbox, and two high-volume skills.
+
+00:00:17.000 --> 00:00:19.000
+Where is my order and return requests?
+
+00:00:19.000 --> 00:00:23.000
+These 15 synthetic tickets show the evaluation structure.
+
+00:00:23.000 --> 00:00:31.000
+This order status case uses order context and approved policy sources to produce a test-only draft.
+
+00:00:31.000 --> 00:00:33.000
+No shopper message is sent.
+
+00:00:33.000 --> 00:00:35.000
+Returns are not all the same.
+
+00:00:35.000 --> 00:00:37.000
+A policy question may produce a draft.
+
+00:00:37.000 --> 00:00:43.000
+An eligible return that needs a label stays with the person because an admin action is required.
+
+00:00:43.000 --> 00:00:48.000
+An out-of-window refund request is escalated because goodwill is a business decision.
+
+00:00:48.000 --> 00:00:59.000
+The same handover rule applies to lost packages, damaged items, chargeback threats, missing data, or any answer that cannot be grounded in approved sources.
+
+00:00:59.000 --> 00:01:05.000
+A paid sprint does not treat synthetic counts as performance. In seven days, I use 50 to 100 anonymized historical tickets to build the test matrix.
+
+00:01:05.000 --> 00:01:18.000
+I audit Gorgias Knowledge, Guidance, Skills, tone, and handover rules, then run representative cases in Gorgias Test mode.
+
+00:01:18.000 --> 00:01:29.000
+Your reviewer scores draft acceptance, major edits, routing agreement, unsafe false negatives, median review time, and unhandled cases.
+
+00:01:29.000 --> 00:01:32.000
+Any unsafe false negative blocks go-live.
+
+00:01:32.000 --> 00:01:36.000
+The fixed design-partner sprint is $750.
+
+00:01:36.000 --> 00:01:42.000
+It ends with the scorecard, failure log, change log, SOP, and a go or no-go decision.
+
+00:01:42.000 --> 00:01:54.266
+If Gorgias setup quality or launch risk is the blocker, let’s take 15 minutes to see whether this scope fits.

@@ -3,23 +3,755 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gorgias WISMO &amp; Returns Readiness Sprint — Proof</title>
+  <meta name="description" content="A pre-pilot evaluation of review-ready WISMO drafts and human-held return exceptions for Shopify support teams using Gorgias.">
+  <title>Pre-pilot evaluation — WISMO &amp; returns workflow</title>
   <style>
+    :root {
+      --bg: #f3efe7;
+      --paper: #fffdf8;
+      --ink: #182124;
+      --muted: #5f6a69;
+      --line: #d7d1c6;
+      --line-strong: #aaa398;
+      --accent: #df5b3f;
+      --accent-soft: #fff0ea;
+      --navy: #19354c;
+      --navy-soft: #edf3f7;
+      --safe: #14735f;
+      --safe-soft: #e9f5f0;
+      --hold: #925f00;
+      --hold-soft: #fff4d8;
+      --danger: #9d3f38;
+      --danger-soft: #fbecea;
+      --focus: #2458c6;
+      --shadow: 0 18px 48px rgba(45, 40, 32, .08);
+      --radius: 18px;
+    }
+
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b1020; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    main { width: min(1100px, calc(100vw - 32px)); }
-    h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 42px); }
-    p { margin: 0 0 20px; color: #cbd5e1; }
-    video { display: block; width: 100%; border-radius: 16px; background: #000; box-shadow: 0 24px 80px rgba(0, 0, 0, .45); }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Aptos", "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button, .button { min-height: 44px; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 20;
+      transform: translateY(-150%);
+      background: var(--paper);
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .skip-link:focus { transform: translateY(0); }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(170, 163, 152, .65);
+      background: rgba(243, 239, 231, .96);
+      backdrop-filter: blur(14px);
+    }
+    .topbar .shell {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .identity { min-width: 0; display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 700; }
+    .identity > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ink);
+      border-radius: 7px;
+      font-size: 12px;
+      background: var(--paper);
+    }
+    .top-meta { min-width: 0; display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 14px; }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border: 1px solid #d6a351;
+      border-radius: 999px;
+      background: var(--hold-soft);
+      color: #6c4600;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #b47700; }
+
+    main { overflow: clip; }
+    .hero > *, .section-head > *, .video-layout > *, .pilot > *, .contact > *, .boundary dd { min-width: 0; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, .75fr);
+      gap: 56px;
+      align-items: end;
+      padding: 84px 0 38px;
+    }
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { font-family: "Aptos Display", "Helvetica Neue", Arial, sans-serif; }
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: clamp(42px, 6vw, 70px);
+      line-height: 1.02;
+      font-weight: 720;
+    }
+    .lede { max-width: 760px; margin: 26px 0 0; color: #40504f; font-size: clamp(18px, 2vw, 22px); }
+    .jump-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 11px 16px;
+      border: 1px solid var(--ink);
+      border-radius: 10px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .button.secondary { background: transparent; color: var(--ink); }
+    .button:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(24, 33, 36, .14); }
+    .boundary {
+      border-top: 3px solid var(--accent);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 0 18px;
+    }
+    .boundary h2 { margin: 0 0 14px; font-size: 17px; }
+    .boundary dl { margin: 0; }
+    .boundary div { display: grid; grid-template-columns: 116px 1fr; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+    .boundary dt { color: var(--muted); font-size: 13px; }
+    .boundary dd { margin: 0; font-weight: 650; font-size: 14px; }
+
+    .case-index {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: rgba(255, 253, 248, .45);
+    }
+    .case-index a { padding: 22px; text-decoration: none; border-right: 1px solid var(--line); }
+    .case-index a:last-child { border-right: 0; }
+    .case-index small { display: block; color: var(--muted); text-transform: uppercase; font-weight: 800; }
+    .case-index strong { display: block; margin-top: 7px; font-size: 17px; }
+    .case-index span { display: block; margin-top: 5px; color: var(--muted); font-size: 14px; }
+    .case-index a:hover { background: var(--paper); }
+
+    .section { padding: 92px 0; }
+    .section + .section { border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr); gap: 44px; align-items: end; margin-bottom: 34px; }
+    .section-head h2 { max-width: 760px; margin: 0; font-size: clamp(32px, 4.8vw, 52px); line-height: 1.08; }
+    .section-head p { margin: 0; color: var(--muted); }
+
+    .case-stack { display: grid; gap: 28px; }
+    .case {
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .case-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 22px;
+      padding: 24px 26px;
+      border-bottom: 1px solid var(--line);
+    }
+    .case-no { margin: 0 0 5px; color: var(--muted); font: 700 12px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .case h3 { margin: 0; font-size: 23px; }
+    .route {
+      flex: none;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .route.draft { color: var(--safe); background: var(--safe-soft); }
+    .route.hold { color: var(--hold); background: var(--hold-soft); }
+    .route.escalate { color: var(--danger); background: var(--danger-soft); }
+    .trace {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .trace section { min-height: 210px; padding: 24px 22px; border-right: 1px solid var(--line); }
+    .trace section:last-child { border-right: 0; }
+    .step-label { margin: 0 0 18px; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    .trace blockquote { margin: 0; font-size: 16px; }
+    .trace dl { margin: 0; }
+    .trace dt { color: var(--muted); font-size: 12px; }
+    .trace dd { margin: 3px 0 13px; font-weight: 650; }
+    .decision { color: var(--navy); font-weight: 760; }
+    .no-send { color: var(--danger); font-weight: 750; }
+    details.draft-copy { border-top: 1px solid var(--line); }
+    details.draft-copy summary { cursor: pointer; padding: 16px 24px; font-weight: 700; }
+    details.draft-copy p { margin: 0; padding: 0 24px 22px; color: #3c4848; white-space: pre-line; }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: 1.1fr repeat(4, 1fr);
+      margin-bottom: 18px;
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--paper);
+    }
+    .summary-strip button {
+      appearance: none;
+      border: 0;
+      border-right: 1px solid var(--line);
+      padding: 16px;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+    .summary-strip button:last-child { border-right: 0; }
+    .summary-strip button:hover, .summary-strip button[aria-pressed="true"] { background: var(--navy-soft); }
+    .summary-strip strong { display: block; font-size: 24px; line-height: 1.1; }
+    .summary-strip span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .filter-note { min-height: 24px; margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--paper); }
+    table { width: 100%; border-collapse: collapse; min-width: 940px; }
+    th, td { padding: 14px 15px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    thead th { position: sticky; top: 63px; z-index: 2; background: var(--navy); color: #fff; font-size: 12px; text-transform: uppercase; }
+    tbody th { font: 700 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:target { background: var(--accent-soft); }
+    tbody tr[hidden] { display: none; }
+    .result { color: var(--safe); font-weight: 800; }
+    .yes { color: var(--danger); font-weight: 700; }
+    .table-note { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
+
+    .video-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 32px; align-items: start; }
+    .video-frame { overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--radius); background: #111; box-shadow: var(--shadow); }
+    video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #111; }
+    .video-notes { border-top: 3px solid var(--accent); padding-top: 20px; }
+    .video-notes h3 { margin: 0 0 10px; font-size: 22px; }
+    .video-notes p { color: var(--muted); }
+    .chapters { display: grid; gap: 7px; margin: 22px 0; }
+    .chapters button {
+      appearance: none;
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 12px;
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+    .chapters time { color: var(--accent); font: 700 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .transcript { margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+    .transcript summary { cursor: pointer; padding: 14px 16px; font-weight: 750; }
+    .transcript-body { max-height: 360px; overflow: auto; padding: 0 16px 16px; color: #3f4c4c; }
+    .transcript-body p { margin: 0 0 10px; }
+    .transcript-body time { display: inline-block; width: 54px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+    .definitions { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--line); }
+    .definitions section { background: var(--paper); padding: 28px; }
+    .definitions h3 { margin: 0 0 14px; font-size: 21px; }
+    .definitions ul { margin: 0; padding-left: 20px; }
+    .definitions li + li { margin-top: 8px; }
+
+    .pilot {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 54px;
+      align-items: start;
+    }
+    .pilot h2 { margin: 0; font-size: clamp(38px, 5vw, 58px); line-height: 1.06; }
+    .price { margin-top: 24px; font-size: 24px; font-weight: 750; }
+    .price span { color: var(--muted); font-size: 14px; font-weight: 500; }
+    .scope-list { border-top: 1px solid var(--line-strong); }
+    .scope-list div { display: grid; grid-template-columns: 132px 1fr; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .scope-list dt { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .scope-list dd { margin: 0; }
+
+    .contact {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 34px;
+      margin-bottom: 76px;
+      padding: 38px;
+      border: 1px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--navy);
+      color: #fff;
+    }
+    .contact h2 { margin: 0 0 8px; font-size: 30px; }
+    .contact p { margin: 0; color: #cbd7df; }
+    .contact .button { background: #fff; color: var(--navy); border-color: #fff; }
+    footer { padding: 26px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 900px) {
+      .hero, .section-head, .video-layout, .pilot { grid-template-columns: 1fr; }
+      .hero { gap: 36px; padding-top: 56px; }
+      .case-index { grid-template-columns: 1fr; }
+      .case-index a { border-right: 0; border-bottom: 1px solid var(--line); }
+      .case-index a:last-child { border-bottom: 0; }
+      .trace { grid-template-columns: 1fr 1fr; }
+      .trace section { min-height: 0; border-bottom: 1px solid var(--line); }
+      .summary-strip { grid-template-columns: repeat(2, 1fr); }
+      .summary-strip button { border-bottom: 1px solid var(--line); }
+      .contact { grid-template-columns: 1fr; }
+      thead th { top: 63px; }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .topbar .shell { gap: 8px; }
+      .identity { gap: 8px; }
+      .identity > span:last-child { max-width: 150px; font-size: 14px; }
+      .top-meta { gap: 8px; }
+      .top-meta > span:not(.status) { display: none; }
+      .status { flex: none; padding: 5px 8px; font-size: 10px; white-space: nowrap; }
+      h1 { font-size: 42px; }
+      .section { padding: 68px 0; }
+      .section-head { gap: 16px; }
+      .trace { grid-template-columns: 1fr; }
+      .trace section { border-right: 0; }
+      .case-head { flex-direction: column; }
+      .summary-strip { grid-template-columns: 1fr 1fr; }
+      .definitions { grid-template-columns: 1fr; }
+      .scope-list div { grid-template-columns: 1fr; gap: 5px; }
+      .contact { padding: 28px 22px; }
+      .boundary div { grid-template-columns: 104px minmax(0, 1fr); }
+      .boundary dd { overflow-wrap: anywhere; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Gorgias WISMO &amp; Returns Readiness Sprint</h1>
-    <p>114-second synthetic test harness — not Gorgias client data or a client case study.</p>
-    <video controls playsinline preload="metadata">
-      <source src="gorgias-wismo-returns-readiness-proof.mp4" type="video/mp4">
-    </video>
+  <a class="skip-link" href="#main">Skip to evaluation</a>
+
+  <header class="topbar" data-reference="R1 R6">
+    <div class="shell">
+      <a class="identity" href="#main" aria-label="Go to evaluation overview">
+        <span class="mark" aria-hidden="true">HH</span>
+        <span>WISMO + returns evaluation</span>
+      </a>
+      <div class="top-meta">
+        <span>15 synthetic messages · 0 shopper sends</span>
+        <span class="status">Internal QA</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="shell">
+      <section class="hero" aria-labelledby="hero-title" data-reference="R1 R2 R8">
+        <div>
+          <p class="eyebrow">Pre-pilot technical evaluation · synthetic demo data</p>
+          <h1 id="hero-title">See routine WISMO become a review-ready draft—while risky return cases stay with a human.</h1>
+          <p class="lede">A workflow prototype for Shopify support teams using Gorgias, showing source context, routing rationale, draft boundaries, and the human decision required before anything reaches a shopper.</p>
+          <nav class="jump-links" aria-label="Evaluation shortcuts">
+            <a class="button" href="#cases">Inspect the three cases <span aria-hidden="true">↓</span></a>
+            <a class="button secondary" href="#walkthrough">Watch the 114-second walkthrough</a>
+          </nav>
+        </div>
+
+        <aside class="boundary" aria-label="Evaluation boundary">
+          <h2>What this page does—and does not—show</h2>
+          <dl>
+            <div><dt>Environment</dt><dd>Aurora Threads, a synthetic demo store</dd></div>
+            <div><dt>Mechanism</dt><dd>Source → route → draft → human action</dd></div>
+            <div><dt>Control</dt><dd>Every output is review-only; no shopper send</dd></div>
+            <div><dt>Claim limit</dt><dd>Not a client result and not a live Gorgias account</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <nav class="case-index" aria-label="Three test cases" data-reference="R1 R5 R6">
+        <a href="#case-wismo">
+          <small>Case 01 · routine</small>
+          <strong>WISMO with tracking context</strong>
+          <span>Draft candidate → human review</span>
+        </a>
+        <a href="#case-return">
+          <small>Case 02 · ambiguous</small>
+          <strong>Return outside policy</strong>
+          <span>No forced remedy → staff judgment</span>
+        </a>
+        <a href="#case-chargeback">
+          <small>Case 03 · high risk</small>
+          <strong>Chargeback threat</strong>
+          <span>No send → urgent escalation</span>
+        </a>
+      </nav>
+
+      <section class="section" id="cases" aria-labelledby="cases-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Mechanism before metrics</p>
+            <h2 id="cases-title">Three cases a CX lead can inspect without pressing Play.</h2>
+          </div>
+          <p>Each case exposes the same four questions: what arrived, which approved source applies, what the system decided, and what a person must do next.</p>
+        </div>
+
+        <div class="case-stack">
+          <article class="case" id="case-wismo" data-reference="R1 R2 R8">
+            <header class="case-head">
+              <div>
+                <p class="case-no">T-001 · ORDER STATUS</p>
+                <h3>Routine WISMO with a usable carrier scan</h3>
+              </div>
+              <span class="route draft">Draft for review</span>
+            </header>
+            <div class="trace">
+              <section>
+                <p class="step-label">1 · Customer message</p>
+                <blockquote>“Order #1041 still hasn’t arrived. I need it for an event this weekend.”</blockquote>
+              </section>
+              <section>
+                <p class="step-label">2 · Approved context</p>
+                <dl>
+                  <dt>Order</dt><dd>#1041 · paid · fulfilled</dd>
+                  <dt>Carrier</dt><dd>USPS · in transit</dd>
+                  <dt>Last scan</dt><dd>Departed Memphis facility · June 8</dd>
+                </dl>
+              </section>
+              <section>
+                <p class="step-label">3 · System decision</p>
+                <p class="decision">Ground the response in the order record and carrier scan.</p>
+                <p class="no-send">Auto-send remains off.</p>
+              </section>
+              <section>
+                <p class="step-label">4 · Human action</p>
+                <p>Check the cited tracking context, adjust tone if needed, then approve or reject the draft.</p>
+              </section>
+            </div>
+            <details class="draft-copy">
+              <summary>Read the draft candidate</summary>
+              <p>Hi Sarah,
+
+I checked order #1041. USPS shows it is in transit, with the latest scan on June 8 leaving the Memphis, TN regional facility. Your tracking number is 9405511899223197428490. If it stops moving or misses your event window, reply here and we will take another look.
+
+Mia from Aurora Threads</p>
+            </details>
+          </article>
+
+          <article class="case" id="case-return" data-reference="R1 R3 R4">
+            <header class="case-head">
+              <div>
+                <p class="case-no">T-004 · RETURN EXCEPTION</p>
+                <h3>Out-of-window return with discretionary goodwill</h3>
+              </div>
+              <span class="route hold">Human judgment required</span>
+            </header>
+            <div class="trace">
+              <section>
+                <p class="step-label">1 · Customer message</p>
+                <blockquote>“The cardigan was delivered April 24. I expect a full refund.”</blockquote>
+              </section>
+              <section>
+                <p class="step-label">2 · Approved context</p>
+                <dl>
+                  <dt>Policy</dt><dd>30 days from delivery</dd>
+                  <dt>Exception</dt><dd>Goodwill credit is staff discretion</dd>
+                  <dt>Requested remedy</dt><dd>Full refund</dd>
+                </dl>
+              </section>
+              <section>
+                <p class="step-label">3 · System decision</p>
+                <p class="decision">Do not invent an exception or promise a refund.</p>
+                <p class="no-send">Route to a person.</p>
+              </section>
+              <section>
+                <p class="step-label">4 · Human action</p>
+                <p>Choose whether any goodwill option is appropriate and own the customer-facing decision.</p>
+              </section>
+            </div>
+            <details class="draft-copy">
+              <summary>Read the holding draft</summary>
+              <p>Hi Margaret,
+
+Your cardigan was delivered on April 24, so the standard 30-day return window has passed. I am sending this to our team to review whether there is any goodwill option available, and we will follow up after they check it.
+
+Mia from Aurora Threads</p>
+            </details>
+          </article>
+
+          <article class="case" id="case-chargeback" data-reference="R3 R4 R5">
+            <header class="case-head">
+              <div>
+                <p class="case-no">T-009 · CHARGEBACK THREAT</p>
+                <h3>High-risk complaint that must not be handled autonomously</h3>
+              </div>
+              <span class="route escalate">Urgent escalation</span>
+            </header>
+            <div class="trace">
+              <section>
+                <p class="step-label">1 · Customer message</p>
+                <blockquote>“If I don’t hear back today I am disputing the charge with my bank.”</blockquote>
+              </section>
+              <section>
+                <p class="step-label">2 · Approved context</p>
+                <dl>
+                  <dt>Order</dt><dd>#1046 · paid · unfulfilled</dd>
+                  <dt>Risk trigger</dt><dd>Bank dispute threat</dd>
+                  <dt>Policy</dt><dd>High-risk cases stay human-only</dd>
+                </dl>
+              </section>
+              <section>
+                <p class="step-label">3 · System decision</p>
+                <p class="decision">Acknowledge urgency without making a remedy promise.</p>
+                <p class="no-send">No send; escalate now.</p>
+              </section>
+              <section>
+                <p class="step-label">4 · Human action</p>
+                <p>Review payment and fulfillment state, decide the response, and manage dispute risk directly.</p>
+              </section>
+            </div>
+            <details class="draft-copy">
+              <summary>Read the escalation draft</summary>
+              <p>Hi Priya,
+
+I understand why you are upset. I found order #1046 in our system and it is paid but not yet fulfilled. I am escalating this to our team now so a person can review it urgently and respond today.
+
+Mia from Aurora Threads</p>
+            </details>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="evaluation" aria-labelledby="evaluation-title" data-reference="R6 R7 R8">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Traceable evaluation</p>
+            <h2 id="evaluation-title">Every synthetic result ties back to one ticket ID.</h2>
+          </div>
+          <p>This is a routing check against an authored fixture—not evidence of live accuracy, time savings, queue reduction, or business impact.</p>
+        </div>
+
+        <div class="summary-strip" role="group" aria-label="Filter evaluation rows">
+          <button type="button" data-filter="all" aria-pressed="true"><strong>15</strong><span>all test rows</span></button>
+          <button type="button" data-filter="draft" aria-pressed="false"><strong>7</strong><span>draft candidates</span></button>
+          <button type="button" data-filter="action" aria-pressed="false"><strong>3</strong><span>admin-action reviews</span></button>
+          <button type="button" data-filter="escalate" aria-pressed="false"><strong>5</strong><span>human escalations</span></button>
+          <button type="button" data-filter="all" aria-pressed="false"><strong>0</strong><span>shopper messages sent</span></button>
+        </div>
+        <p class="filter-note" id="filter-note" aria-live="polite">Showing all 15 ticket rows.</p>
+
+        <div class="table-wrap" tabindex="0" aria-label="Scrollable evaluation table">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Ticket</th>
+                <th scope="col">Category</th>
+                <th scope="col">Expected route</th>
+                <th scope="col">Observed route</th>
+                <th scope="col">Draft allowed</th>
+                <th scope="col">Escalated</th>
+                <th scope="col">Check</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="ticket-t-001" data-ticket="T-001" data-route="draft"><th scope="row"><a href="#case-wismo">T-001</a></th><td>WISMO</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-002" data-ticket="T-002" data-route="escalate"><th scope="row">T-002</th><td>Delivered, not received</td><td>Human escalation</td><td>Human escalation</td><td>No</td><td class="yes">Yes</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-003" data-ticket="T-003" data-route="action"><th scope="row">T-003</th><td>Eligible return</td><td>Admin-action review</td><td>Admin-action review</td><td>No</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-004" data-ticket="T-004" data-route="escalate"><th scope="row"><a href="#case-return">T-004</a></th><td>Return exception</td><td>Human escalation</td><td>Human escalation</td><td>No</td><td class="yes">Yes</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-005" data-ticket="T-005" data-route="escalate"><th scope="row">T-005</th><td>Damaged item</td><td>Human escalation</td><td>Human escalation</td><td>No</td><td class="yes">Yes</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-006" data-ticket="T-006" data-route="action"><th scope="row">T-006</th><td>Address change</td><td>Admin-action review</td><td>Admin-action review</td><td>No</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-007" data-ticket="T-007" data-route="draft"><th scope="row">T-007</th><td>Product question</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-008" data-ticket="T-008" data-route="draft"><th scope="row">T-008</th><td>Discount policy</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-009" data-ticket="T-009" data-route="escalate"><th scope="row"><a href="#case-chargeback">T-009</a></th><td>Chargeback threat</td><td>Human escalation</td><td>Human escalation</td><td>No</td><td class="yes">Yes</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-010" data-ticket="T-010" data-route="action"><th scope="row">T-010</th><td>Cancellation</td><td>Admin-action review</td><td>Admin-action review</td><td>No</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-011" data-ticket="T-011" data-route="escalate"><th scope="row">T-011</th><td>Wholesale</td><td>Human escalation</td><td>Human escalation</td><td>No</td><td class="yes">Yes</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-012" data-ticket="T-012" data-route="draft"><th scope="row">T-012</th><td>International shipping</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-013" data-ticket="T-013" data-route="draft"><th scope="row">T-013</th><td>WISMO</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-014" data-ticket="T-014" data-route="draft"><th scope="row">T-014</th><td>Gift policy</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+              <tr id="ticket-t-015" data-ticket="T-015" data-route="draft"><th scope="row">T-015</th><td>Return policy</td><td>Draft for review</td><td>Draft for review</td><td>Yes</td><td>No</td><td class="result">Pass</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">“Pass” means the observed route matches the expected route in this synthetic fixture. It does not describe live customer outcomes.</p>
+      </section>
+
+      <section class="section" id="walkthrough" aria-labelledby="walkthrough-title" data-reference="R2 R8">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Internal workflow recording · v0</p>
+            <h2 id="walkthrough-title">Watch after the evidence—not before it.</h2>
+          </div>
+          <p>The recording shows the synthetic queue, the seven-day pre-live workflow, and the client-scored QA boundary. Captions and a full transcript are available.</p>
+        </div>
+
+        <div class="video-layout">
+          <div class="video-frame">
+            <video id="workflow-video" controls playsinline preload="metadata" poster="assets/video-poster.jpg">
+              <source src="assets/synthetic-workflow-recording-v0.mp4" type="video/mp4">
+              <track kind="captions" srclang="en" label="English" src="assets/synthetic-workflow-recording-v0.vtt" default>
+              Your browser cannot play this video. <a href="assets/synthetic-workflow-recording-v0.mp4">Open the MP4</a> or <a href="transcript.txt">read the transcript</a>.
+            </video>
+          </div>
+          <aside class="video-notes">
+            <h3>Chapters</h3>
+            <p>Use the recording to inspect sequence and boundaries. Do not interpret the synthetic counts as client performance.</p>
+            <div class="chapters" aria-label="Video chapters">
+              <button type="button" data-seek="0"><time>00:00</time><span>Scope and synthetic-data boundary</span></button>
+              <button type="button" data-seek="19"><time>00:19</time><span>WISMO and return routing examples</span></button>
+              <button type="button" data-seek="48"><time>00:48</time><span>Mandatory human handovers</span></button>
+              <button type="button" data-seek="59"><time>00:59</time><span>Seven-day pre-live workflow</span></button>
+              <button type="button" data-seek="78"><time>01:18</time><span>Client-scored QA</span></button>
+              <button type="button" data-seek="92"><time>01:32</time><span>Sprint scope and next step</span></button>
+            </div>
+            <details class="transcript">
+              <summary>Read the full transcript</summary>
+              <div class="transcript-body">
+                <p><time>00:00</time>This is a synthetic pre-flight QA demo for a Shopify brand.</p>
+                <p><time>00:04</time>It is not connected to a client Gorgias account, and it is not a client case study.</p>
+                <p><time>00:09</time>The commercial scope is deliberately narrow.</p>
+                <p><time>00:12</time>One Shopify store, one Gorgias inbox, and two high-volume skills.</p>
+                <p><time>00:17</time>Where is my order and return requests?</p>
+                <p><time>00:19</time>These 15 synthetic tickets show the evaluation structure.</p>
+                <p><time>00:23</time>This order status case uses order context and approved policy sources to produce a test-only draft.</p>
+                <p><time>00:31</time>No shopper message is sent.</p>
+                <p><time>00:33</time>Returns are not all the same.</p>
+                <p><time>00:35</time>A policy question may produce a draft.</p>
+                <p><time>00:37</time>An eligible return that needs a label stays with the person because an admin action is required.</p>
+                <p><time>00:43</time>An out-of-window refund request is escalated because goodwill is a business decision.</p>
+                <p><time>00:48</time>The same handover rule applies to lost packages, damaged items, chargeback threats, missing data, or any answer that cannot be grounded in approved sources.</p>
+                <p><time>00:59</time>A paid sprint does not treat synthetic counts as performance. In seven days, I use 50 to 100 anonymized historical tickets to build the test matrix.</p>
+                <p><time>01:05</time>I audit Gorgias Knowledge, Guidance, Skills, tone, and handover rules, then run representative cases in Gorgias Test mode.</p>
+                <p><time>01:18</time>Your reviewer scores draft acceptance, major edits, routing agreement, unsafe false negatives, median review time, and unhandled cases.</p>
+                <p><time>01:29</time>Any unsafe false negative blocks go-live.</p>
+                <p><time>01:32</time>The fixed design-partner sprint is $750.</p>
+                <p><time>01:36</time>It ends with the scorecard, failure log, change log, SOP, and a go or no-go decision.</p>
+                <p><time>01:42</time>If Gorgias setup quality or launch risk is the blocker, let’s take 15 minutes to see whether this scope fits.</p>
+                <p><a href="transcript.txt">Open the plain-text transcript</a></p>
+              </div>
+            </details>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="definitions-title" data-reference="R7 R8">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Claim discipline</p>
+            <h2 id="definitions-title">What the synthetic evaluation can support.</h2>
+          </div>
+          <p>The page reports observable routing behavior only. Client performance requires client data and client review.</p>
+        </div>
+        <div class="definitions">
+          <section>
+            <h3>Supported by this fixture</h3>
+            <ul>
+              <li>Which source fields were available to each test case.</li>
+              <li>Whether the test produced a draft candidate, admin-action review, or human escalation.</li>
+              <li>Whether the observed route matched the authored expected route.</li>
+              <li>That shopper-facing sending was disabled for the run.</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Requires a client pilot</h3>
+            <ul>
+              <li>Draft acceptance without a major edit.</li>
+              <li>Edit reasons, routing agreement, and unsafe false negatives.</li>
+              <li>Median review time and unhandled cases.</li>
+              <li>Any claim about SLA, backlog, cost, revenue, staffing, or customer satisfaction.</li>
+            </ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="section pilot" id="pilot" aria-labelledby="pilot-title" data-reference="R2 R3 R4 R7">
+        <div>
+          <p class="eyebrow">Seven-day readiness sprint</p>
+          <h2 id="pilot-title">Configure and QA two native Gorgias skills before shopper-facing go-live.</h2>
+          <p class="price">$750 fixed <span>· first three design partners</span></p>
+        </div>
+        <dl class="scope-list">
+          <div><dt>Scope</dt><dd>One Shopify store, one Gorgias inbox, WISMO and return-request skills.</dd></div>
+          <div><dt>Inputs</dt><dd>50–100 anonymized historical tickets, approved policies, and one named client reviewer.</dd></div>
+          <div><dt>Work</dt><dd>Test matrix, Knowledge/Guidance/Skills audit, non-live Gorgias Test conversations, and handover rules.</dd></div>
+          <div><dt>Deliverables</dt><dd>Client-scored QA, failure and knowledge-gap log, change log, SOP/video, and a go/no-go review.</dd></div>
+          <div><dt>Excluded</dt><dd>No live shopper send, autonomous refund, cancellation, order edit, or unscoped integration.</dd></div>
+        </dl>
+      </section>
+
+      <section class="contact" aria-labelledby="contact-title" data-reference="R1 R5">
+        <div>
+          <p class="eyebrow">Named operator</p>
+          <h2 id="contact-title">Ho Khac Huy</h2>
+          <p>Implementation operator · Gorgias pre-live configuration and QA</p>
+        </div>
+        <a class="button" href="mailto:hohuyblon@gmail.com?subject=15-minute%20Gorgias%20readiness%20fit%20check">Request a 15-minute fit check <span aria-hidden="true">→</span></a>
+      </section>
+    </div>
   </main>
+
+  <footer>
+    <div class="shell">Aurora Threads is a synthetic demo store. This page is an internal-QA review artifact, not a client case study or live implementation claim.</div>
+  </footer>
+
+  <script>
+    const rows = [...document.querySelectorAll("tbody tr[data-route]")];
+    const filters = [...document.querySelectorAll("[data-filter]")];
+    const note = document.querySelector("#filter-note");
+
+    filters.forEach((button) => {
+      button.addEventListener("click", () => {
+        const route = button.dataset.filter;
+        filters.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+        let visible = 0;
+        rows.forEach((row) => {
+          const show = route === "all" || row.dataset.route === route;
+          row.hidden = !show;
+          if (show) visible += 1;
+        });
+        note.textContent = route === "all"
+          ? "Showing all 15 ticket rows."
+          : `Showing ${visible} ${route} ticket rows.`;
+      });
+    });
+
+    const video = document.querySelector("#workflow-video");
+    document.querySelectorAll("[data-seek]").forEach((button) => {
+      button.addEventListener("click", () => {
+        video.currentTime = Number(button.dataset.seek);
+        video.play();
+      });
+    });
+  </script>
 </body>
 </html>
