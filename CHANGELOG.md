@@ -1,5 +1,12 @@
 # Changelog
 
+> **Release decision:** no tag or GitHub release has been created. `0.3.0` is an
+> unreleased draft-branch checkpoint. It remains blocked until the structural
+> evidence controls clear, protected independent provenance is authenticated,
+> an externally governed release decision is recorded, the PR is reviewed/
+> merged, and the public proof is rechecked. Repository-local automation cannot
+> issue that approval. A version heading is not a claim that a release exists.
+
 ## 0.3.0 — 2026-07-22
 
 - Added a real Next.js/React operator workbench in strict TypeScript with typed
@@ -18,9 +25,12 @@
   expanded least-privilege CI with a disposable PostgreSQL stack smoke test,
   integrated architecture/demo/verification/limitations documentation, and a
   production-build debugging case study.
-- Added an executable full technical harness and a dated, official-source market
-  quality gate that currently returns `NOT_MARKET_READY` at 53/85 with eight
-  non-negotiable critical gaps.
+- Added an executable local technical harness and a dated, official-source
+  market-readiness evidence gate that currently returns `NOT_MARKET_READY`; its
+  internal rubric is 42.5/100 against threshold 85 with eight non-negotiable
+  critical gaps. Criterion status is evidence-derived, external observations
+  are bound to the current product-tree digest and sanitized artifacts, and the
+  production evidence contract is fingerprint-checked for reviewable drift.
 
 ## 0.2.0 — 2026-07-22
 

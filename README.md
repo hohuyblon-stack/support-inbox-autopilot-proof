@@ -5,8 +5,9 @@
 > recorded. It is not client work, not connected to a live Gorgias or Shopify
 > account, and not affiliated with or endorsed by either company.
 
-> **Market-quality status: `NOT_MARKET_READY` (53/85, eight critical gaps).**
-> The full technical harness passes 11/11 checks, but auth, live contracts,
+> **Market-release status: `NOT_MARKET_READY`.** The internal evidence rubric is
+> **42.5/100 against a release threshold of 85**, with eight critical gaps. The
+> local technical harness passes 11/11 checks, but auth, live contracts,
 > governed feedback/analytics/operations, and buyer/user validation remain
 > blocking. See the [market-quality gate](docs/MARKET_QUALITY_GATE.md).
 
@@ -22,6 +23,21 @@ escalation?
 [Demo script](docs/DEMO_SCRIPT.md) ·
 [Limitations](docs/LIMITATIONS.md)
 
+## Operator, bottleneck, and scope
+
+**WISMO** means “Where is my order?” The intended reviewer is an ecommerce
+Head of Support/CX, support-operations lead, or engineer evaluating a safe first
+automation slice. The manual bottleneck is not typing a reply: it is collecting
+order and policy context, deciding whether that evidence is sufficient, routing
+exceptions consistently, and leaving a human-owned record before any action.
+
+This sample supports synthetic WISMO and ordinary return-request intake,
+recorded order/policy context, grounded draft-versus-escalation decisions, and
+persisted approval or rejection. Missing context, policy conflicts, low
+confidence, prompt injection, provider failure, chargeback/dispute language,
+damaged/lost-item exceptions, refund/cancellation/address changes, and every
+external send or order mutation remain human-only or out of scope.
+
 ## What is real, and what is a fixture
 
 | Boundary | Implemented evidence | Honest limit |
@@ -33,7 +49,7 @@ escalation?
 | AI/provider control | Structured recorded output, source allowlist, confidence gate, timeout/failure routing, prompt-injection tripwire, and 20 fixtures | No live model, retrieval system, latency/cost result, or accuracy claim |
 | Human oversight | Approval/rejection is persisted; `automatic_send_allowed` is constrained false and the application exposes no send endpoint or button | Approval records readiness only; it cannot contact a shopper or mutate an order |
 | Delivery | Locked Python/Node dependencies, backend/frontend/E2E tests, production frontend build, least-privilege CI, Docker files, and runbooks | No AWS account, production SLO, traffic, customer outcome, or paid infrastructure |
-| Quality gate | One command runs 11 technical checks, then applies a dated evidence/source registry with critical blockers that points cannot override | Technical gate passes; market gate is 53/85 `NOT_MARKET_READY` and exits non-zero without an explicit baseline-only flag |
+| Quality gate | One command runs 11 local technical checks, verifies the fingerprint-checked evidence policy, binds observations to the product-tree digest, and derives criterion status from current checks and sanitized observation receipts | Local technical gate passes; the internal rubric is 42.5/100 against threshold 85 and the verdict remains `NOT_MARKET_READY`. Repository-local automation cannot issue a final market pass |
 
 Synthetic data is not used to make the software look deployed. It is used so the
 real API, database, UI, failure paths, and tests can be reviewed without exposing

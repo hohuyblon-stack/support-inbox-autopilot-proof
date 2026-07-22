@@ -3,9 +3,12 @@
 Use only synthetic input. Start the migrated API and Next.js frontend with the
 README quick start before recording.
 
-## 0:00–0:20 — State the boundary
+## 0:00–0:20 — Problem, architecture, and boundary
 
-Show the masthead and amber boundary.
+State the operator problem in one sentence: repeated WISMO/return cases require
+order context, policy evidence, consistent exception routing, and a named human
+decision. Show the README architecture diagram in one view, then the masthead
+and amber boundary.
 
 > This is a real local Next.js, FastAPI, and relational workflow using synthetic
 > data and a recorded provider. It cannot send a message or change an order. I am
@@ -68,7 +71,9 @@ both use declared synthetic local workloads and are not production claims.
 > The next real-client step is not autonomous sending. It is a bounded readiness
 > sprint using approved policies, lawful sanitized cases, a named reviewer,
 > platform contracts, authentication, privacy design, monitoring, and explicit
-> go/no-go rules.
+> go/no-go rules. If that is the bottleneck, the next action is to choose one
+> sanitized ticket category and one representative operator for a controlled
+> review session.
 
 Do not say “production-ready,” “enterprise-grade,” “deployed,” “accurate,” or
 quote a time/cost/business improvement not supported by separately observed
