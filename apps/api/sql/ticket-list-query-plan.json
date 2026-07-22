@@ -1,0 +1,52 @@
+{
+  "baseline": {
+    "cursor_status": "pending",
+    "index": "(status, created_at)",
+    "latency": {
+      "median_ms": 6.1206,
+      "p95_ms": 6.2484
+    },
+    "query_plan": [
+      "MULTI-INDEX OR",
+      "INDEX 1",
+      "SEARCH tickets USING INDEX ix_tickets_status_created_at (status=? AND created_at<?)",
+      "INDEX 2",
+      "SEARCH tickets USING INDEX ix_tickets_status_created_at (status=? AND created_at=?)",
+      "USE TEMP B-TREE FOR ORDER BY"
+    ],
+    "result_count": 50,
+    "result_sha256": "2cb84b943ca573355c698c4ab6fc848d39bc04315aa54ca4fc978d93f6a0a472",
+    "uses_temp_sort": true
+  },
+  "environment": {
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "python": "3.13.12",
+    "sqlite": "3.50.4"
+  },
+  "interpretation": "The id tie-breaker removes SQLite's temporary sort for the keyset-pagination order. Timings are local synthetic evidence, not a production latency claim.",
+  "optimized": {
+    "cursor_status": "pending",
+    "index": "(status, created_at, id)",
+    "latency": {
+      "median_ms": 0.3186,
+      "p95_ms": 0.3344
+    },
+    "query_plan": [
+      "SEARCH tickets USING INDEX ix_tickets_status_created_at_id (status=?)"
+    ],
+    "result_count": 50,
+    "result_sha256": "2cb84b943ca573355c698c4ab6fc848d39bc04315aa54ca4fc978d93f6a0a472",
+    "uses_temp_sort": false
+  },
+  "query": "SELECT id, external_id, status, created_at FROM tickets WHERE status = ? AND (created_at < ? OR (created_at = ? AND id < ?)) ORDER BY created_at DESC, id DESC LIMIT ?",
+  "recorded_at": "2026-07-22T07:52:48.305796+00:00",
+  "schema_version": 1,
+  "workload": {
+    "burst_rows_per_timestamp": 8,
+    "cursor_status": "pending",
+    "page_size": 50,
+    "rows": 30000,
+    "runs_per_path": 300,
+    "status_filter": "pending"
+  }
+}

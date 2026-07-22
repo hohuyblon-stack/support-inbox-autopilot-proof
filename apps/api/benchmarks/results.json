@@ -1,0 +1,29 @@
+{
+  "application_concurrent": {
+    "max_ms": 12.371,
+    "median_ms": 12.274,
+    "min_ms": 10.482,
+    "p95_ms": 12.359
+  },
+  "baseline_sequential": {
+    "max_ms": 24.319,
+    "median_ms": 24.183,
+    "min_ms": 22.141,
+    "p95_ms": 24.286
+  },
+  "environment": {
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "python": "3.13.12"
+  },
+  "interpretation": "Synthetic deterministic I/O benchmark; demonstrates overlap of two independent waits, not production throughput or provider latency.",
+  "median_speedup": 1.97,
+  "recorded_at": "2026-07-22T07:44:24.939257+00:00",
+  "schema_version": 1,
+  "workload": {
+    "adapter": "DeterministicContextProvider",
+    "context_reads_per_evaluation": 2,
+    "delay_per_read_ms": 10.0,
+    "iterations_per_path": 60,
+    "network_calls": 0
+  }
+}
