@@ -112,6 +112,20 @@ No match is the expected result for the high-confidence pattern check. GitHub
 secret scanning and push protection remain separate remote controls. No scanner
 was installed or executed from an untrusted source.
 
+## 9. Full technical and market-quality harness
+
+```bash
+uv run --python 3.13 python scripts/quality_harness.py --allow-not-ready
+python3 market_quality.py --verify --allow-not-ready
+```
+
+The full harness currently reports 11/11 technical checks passing and the market
+gate at `NOT_MARKET_READY`, 53/85, with eight critical gaps. The exception flag
+only allows the known failing baseline to be reproduced. Run without that flag
+for the real release gate; it exits non-zero until all critical criteria pass and
+the score reaches 85. See
+[`MARKET_QUALITY_GATE.md`](MARKET_QUALITY_GATE.md).
+
 ## What these checks do not prove
 
 - live LLM/retrieval quality, provider cost, latency, rate limits, or availability;

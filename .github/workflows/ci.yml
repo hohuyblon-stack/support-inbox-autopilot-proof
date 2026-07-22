@@ -26,6 +26,8 @@ jobs:
         run: |
           python3 evaluate.py --output /tmp/evaluation-results.json
           diff -u evaluation/results.json /tmp/evaluation-results.json
+      - name: Verify the explicit not-market-ready boundary
+        run: python3 market_quality.py --verify --allow-not-ready
       - name: Run API, migration, container-contract, and evidence tests
         run: uv run --python 3.13 pytest -q apps/api/tests
       - name: Verify migration and checked-in performance evidence

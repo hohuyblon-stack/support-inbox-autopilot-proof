@@ -18,6 +18,9 @@
   expanded least-privilege CI with a disposable PostgreSQL stack smoke test,
   integrated architecture/demo/verification/limitations documentation, and a
   production-build debugging case study.
+- Added an executable full technical harness and a dated, official-source market
+  quality gate that currently returns `NOT_MARKET_READY` at 53/85 with eight
+  non-negotiable critical gaps.
 
 ## 0.2.0 — 2026-07-22
 

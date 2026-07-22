@@ -5,6 +5,11 @@
 > recorded. It is not client work, not connected to a live Gorgias or Shopify
 > account, and not affiliated with or endorsed by either company.
 
+> **Market-quality status: `NOT_MARKET_READY` (53/85, eight critical gaps).**
+> The full technical harness passes 11/11 checks, but auth, live contracts,
+> governed feedback/analytics/operations, and buyer/user validation remain
+> blocking. See the [market-quality gate](docs/MARKET_QUALITY_GATE.md).
+
 A narrow operator workflow for one practical question: can a support case become
 a grounded, review-only draft, or must it remain a human-owned action or
 escalation?
@@ -13,6 +18,7 @@ escalation?
 [Architecture](docs/ARCHITECTURE.md) ·
 [Evaluation](docs/EVALUATION.md) ·
 [Verification](docs/VERIFICATION.md) ·
+[Market-quality gate](docs/MARKET_QUALITY_GATE.md) ·
 [Demo script](docs/DEMO_SCRIPT.md) ·
 [Limitations](docs/LIMITATIONS.md)
 
@@ -27,6 +33,7 @@ escalation?
 | AI/provider control | Structured recorded output, source allowlist, confidence gate, timeout/failure routing, prompt-injection tripwire, and 20 fixtures | No live model, retrieval system, latency/cost result, or accuracy claim |
 | Human oversight | Approval/rejection is persisted; `automatic_send_allowed` is constrained false and the application exposes no send endpoint or button | Approval records readiness only; it cannot contact a shopper or mutate an order |
 | Delivery | Locked Python/Node dependencies, backend/frontend/E2E tests, production frontend build, least-privilege CI, Docker files, and runbooks | No AWS account, production SLO, traffic, customer outcome, or paid infrastructure |
+| Quality gate | One command runs 11 technical checks, then applies a dated evidence/source registry with critical blockers that points cannot override | Technical gate passes; market gate is 53/85 `NOT_MARKET_READY` and exits non-zero without an explicit baseline-only flag |
 
 Synthetic data is not used to make the software look deployed. It is used so the
 real API, database, UI, failure paths, and tests can be reviewed without exposing
@@ -121,7 +128,7 @@ npm run test:e2e
 ```
 
 See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for benchmark, query-plan,
-Docker, security-scan, and result-boundary details.
+Docker, security-scan, market-quality, and result-boundary details.
 
 ## Failure paths visible in the workbench
 

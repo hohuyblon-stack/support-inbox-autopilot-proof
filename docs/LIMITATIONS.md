@@ -81,3 +81,13 @@
   semantics and mobile overflow.
 - This is not a complete screen-reader, browser matrix, localization, zoom,
   high-contrast, cognitive-load, or assistive-technology audit.
+
+## Market-quality status
+
+- The full technical harness passes, but the dated market gate is 53/85 and
+  `NOT_MARKET_READY` because eight critical criteria remain failed or partial.
+- Passing authored fixtures, CI, visual review, Docker/PostgreSQL smoke, or a
+  portfolio score cannot override missing identity/security, live contracts,
+  governed feedback/outcomes/operations, or representative user/buyer evidence.
+- `--allow-not-ready` exists only to verify this honest baseline in a draft; it
+  does not waive the release gate.
