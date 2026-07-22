@@ -1,122 +1,167 @@
-# WISMO and returns readiness proof
+# Support readiness workbench
 
-> **Independent technical work sample.** Synthetic tickets, recorded provider
-> outputs, and a local-only control engine; not client work, not a live Gorgias
-> account, and not affiliated with or endorsed by Gorgias or Shopify.
+> **Independent full-stack engineering sample.** The application is real and
+> runnable; every ticket, policy, order, and provider result is synthetic or
+> recorded. It is not client work, not connected to a live Gorgias or Shopify
+> account, and not affiliated with or endorsed by either company.
 
-A reviewable proof for a narrow support-automation question: can routine WISMO
-and policy questions become grounded draft candidates while exceptions, admin
-changes, provider failures, and risky requests stay with a person?
+A narrow operator workflow for one practical question: can a support case become
+a grounded, review-only draft, or must it remain a human-owned action or
+escalation?
 
-[Interactive evidence page](https://hohuyblon-stack.github.io/gorgias-wismo-returns-readiness-proof/) ·
+[Static evidence page](https://hohuyblon-stack.github.io/gorgias-wismo-returns-readiness-proof/) ·
 [Architecture](docs/ARCHITECTURE.md) ·
 [Evaluation](docs/EVALUATION.md) ·
 [Verification](docs/VERIFICATION.md) ·
-[Demo script](docs/DEMO_SCRIPT.md)
+[Demo script](docs/DEMO_SCRIPT.md) ·
+[Limitations](docs/LIMITATIONS.md)
 
-## What is implemented
+## What is real, and what is a fixture
 
-- A deterministic safety router separates draft-eligible, admin-action, and
-  escalation intents before a provider is called.
-- A recorded, offline provider boundary returns structured draft, citation, and
-  confidence fields for synthetic fixtures.
-- Drafts are rejected when citations are outside the approved source set,
-  confidence is below the declared threshold, output is malformed, or the
-  provider fails.
-- Missing order context, policy conflicts, high-risk intents, unknown intents,
-  and common prompt-injection wording route to a human.
-- Every result has `automatic_send_allowed=false`; human approval records review
-  state but this repository contains no shopper-send or external-write adapter.
-- Twenty committed synthetic scenarios cover ordinary flows and failure paths.
-  `evaluation/results.json` is the reproducible output of the offline evaluator.
-- The existing page presents 15 curated rows and a 114-second synthetic
-  walkthrough; the executable suite adds five safety-focused cases.
+| Boundary | Implemented evidence | Honest limit |
+|---|---|---|
+| Browser workflow | Next.js/React interface in strict TypeScript with intake, queue, decision, loading, empty, error, mobile, and review states | Local workbench; no customer-facing deployment |
+| API | FastAPI request/response validation, bounded pagination, OpenAPI, health/readiness, metrics, explicit conflicts, and API tests | No authentication or public multi-tenant service |
+| Relational state | SQLAlchemy ticket/evaluation/citation model, constraints, indexes, Alembic migration, async SQLite test path, and PostgreSQL Docker path | PostgreSQL container path is reviewable but was not run on the current machine because Docker is unavailable |
+| Async work | Two independent context reads start concurrently under one timeout and cancellation boundary | Deterministic local adapter with recorded delay; no live network/provider throughput claim |
+| AI/provider control | Structured recorded output, source allowlist, confidence gate, timeout/failure routing, prompt-injection tripwire, and 20 fixtures | No live model, retrieval system, latency/cost result, or accuracy claim |
+| Human oversight | Approval/rejection is persisted; `automatic_send_allowed` is constrained false and the application exposes no send endpoint or button | Approval records readiness only; it cannot contact a shopper or mutate an order |
+| Delivery | Locked Python/Node dependencies, backend/frontend/E2E tests, production frontend build, least-privilege CI, Docker files, and runbooks | No AWS account, production SLO, traffic, customer outcome, or paid infrastructure |
 
-## Control flow
+Synthetic data is not used to make the software look deployed. It is used so the
+real API, database, UI, failure paths, and tests can be reviewed without exposing
+customer data or requiring paid production accounts.
+
+## Operator journey
 
 ```mermaid
 flowchart LR
-    A["Synthetic ticket"] --> B["Schema and context checks"]
-    B --> C["Deterministic risk and action rules"]
-    C -->|"high risk or write action"| H["Human queue"]
-    C -->|"draft eligible"| P["Recorded provider boundary"]
-    P --> V["Structure, citation, and confidence validation"]
-    V -->|"valid"| R["Review-only draft"]
-    V -->|"invalid or failed"| H
-    R --> H
-    H --> X["No external send in this repository"]
+    O["Operator creates synthetic case"] --> W["Next.js / React / TypeScript"]
+    W --> A["FastAPI validation"]
+    A --> D["Relational ticket state"]
+    A --> C["Bounded concurrent context reads"]
+    C --> R["Deterministic safety router"]
+    R --> E["Evaluation + citations persisted"]
+    E --> W
+    W --> H["Human review record"]
+    H --> X["No send adapter or endpoint"]
 ```
 
-The detailed component and trust boundaries are in
+The transaction, async, provider, and trust boundaries are detailed in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Quick start
 
-Requires Python 3.9 or newer. No package installation, API key, model account,
-or network connection is needed.
+Requires Python 3.11–3.14, [uv](https://docs.astral.sh/uv/), Node.js 20.9 or
+newer, and npm. The default database is a local SQLite file under ignored
+`.state/`; no API key or model account is required.
+
+Install the locked dependencies and migrate the database:
 
 ```bash
-python3 evaluate.py
+uv sync --python 3.13 --frozen
+uv run --python 3.13 python -m apps.api.app.migrations
+
+cd apps/web
+npm ci
+cd ../..
+```
+
+Start the API from the repository root:
+
+```bash
+AUTO_CREATE_SCHEMA=false \
+uv run --python 3.13 uvicorn apps.api.app.main:app \
+  --host 127.0.0.1 --port 8000
+```
+
+In another terminal, start the web application:
+
+```bash
+cd apps/web
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 \
+npm run dev -- --hostname 127.0.0.1 --port 3000
+```
+
+Open `http://127.0.0.1:3000`. API documentation is available locally at
+`http://127.0.0.1:8000/docs`.
+
+The Docker Compose path uses PostgreSQL and production containers. It is a
+reviewable deployment path, not evidence that this branch was operated in a
+cloud account:
+
+```bash
+docker compose up --build
+```
+
+## Verification
+
+Run from the repository root unless a command changes directory:
+
+```bash
+# Original deterministic control/evidence contracts
 python3 -m unittest discover -s tests -v
+python3 evaluate.py --output /tmp/evaluation-results.json
+diff -u evaluation/results.json /tmp/evaluation-results.json
+
+# FastAPI, async, migration, SQL, and backend behavior
+uv run --python 3.13 pytest -q apps/api/tests
+
+# Strict TypeScript, component behavior, production build, and dependency audit
+cd apps/web
+npm run typecheck
+npm test
+npm run build
+npm audit --audit-level=high
+
+# Actual browser-to-API-to-database flow
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Regenerate the committed evaluation evidence:
+See [`docs/VERIFICATION.md`](docs/VERIFICATION.md) for benchmark, query-plan,
+Docker, security-scan, and result-boundary details.
 
-```bash
-python3 evaluate.py --output evaluation/results.json
-```
+## Failure paths visible in the workbench
 
-Open `index.html` directly, or serve the page locally:
-
-```bash
-python3 -m http.server 8765
-```
-
-Then visit `http://127.0.0.1:8765/`.
-
-## What the result means
-
-The committed fixture run records 20 expected-versus-observed routes and zero
-automatic sends. A matching route means only that the local control engine
-matched the authored expectation for that synthetic input. It is not evidence
-of live intent accuracy, draft acceptance, support cost, time saved, SLA impact,
-or customer outcomes.
-
-## Security and privacy
-
-- Fixtures contain fictional names, orders, policies, and messages.
-- The evaluator performs no network calls and reads no environment secrets.
-- Provider exceptions are reduced to a safe failure category rather than copied
-  into public output.
-- The repository has no refund, cancellation, order-edit, Gorgias, Shopify, or
-  message-send credential boundary.
-
-See [`SECURITY.md`](SECURITY.md) and
-[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) before adapting this proof.
-
-## Relevant use
-
-This proof is useful to ecommerce support leads and support-automation partners
-evaluating a bounded pre-live readiness sprint: define policy sources, exercise
-representative cases, record unsafe false negatives, and keep go-live decisions
-with a named reviewer. A production implementation still requires the buyer's
-actual policies, lawful access, platform contracts, privacy review, monitoring,
-and explicit approval rules.
+- malformed API input is rejected with typed validation errors;
+- repeated external IDs return an explicit conflict;
+- missing order context, policy conflicts, risky/admin intents, unapproved
+  citations, low confidence, injection wording, malformed provider output, and
+  provider timeout all avoid the review-only draft path;
+- API load failure produces a retryable browser error state;
+- empty, loading, pending, evaluated, escalation, approval, and rejection states
+  remain explicit;
+- every evaluation stores zero automatic sends by schema constraint and API
+  behavior.
 
 ## Repository map
 
-- `readiness.py` — deterministic routing and review boundary.
-- `evaluate.py` — offline fixture runner and report generator.
-- `evaluation/scenarios.json` — 20 synthetic evaluation cases.
-- `evaluation/results.json` — generated expected-versus-observed evidence.
-- `tests/` — behavior, CLI, page-link, and truth-boundary checks.
-- `index.html` and `assets/` — public evidence page and captioned walkthrough.
-- `docs/` — architecture, evaluation, demo, verification, limitations, and a
-  real debugging case study from this hardening pass.
+- `apps/web/` — Next.js/React/TypeScript operator workbench, component tests,
+  production build, and real full-stack Playwright flow.
+- `apps/api/app/` — FastAPI contract, async provider boundary, domain service,
+  relational models, metrics, and human-review state.
+- `apps/api/migrations/` — versioned relational schema.
+- `apps/api/tests/` — API, async-concurrency, migration, metrics, and data tests.
+- `readiness.py` — deterministic support-safety and review engine.
+- `evaluate.py` and `evaluation/` — 20-case offline regression evidence.
+- `index.html` and `assets/` — original static evidence page and walkthrough.
+- `docs/` — architecture, performance/SQL evidence, demo, verification,
+  limitations, security, deployment, and debugging decisions.
+
+## Relevant use
+
+This proof supports a bounded **Support Automation Readiness Sprint**: map
+approved sources, exercise representative routes and failures, name human owners,
+and define a safe first implementation slice. A real engagement still requires
+the buyer's actual policies, lawful access, privacy review, provider/platform
+contracts, measurement plan, and explicit authorization for every external
+action.
 
 ## Limitations
 
-No live provider, retrieval system, Gorgias/Shopify integration, authentication,
-durable queue, PII store, operational monitoring, or customer-facing send exists.
-The injection check is a small deterministic tripwire, not a comprehensive
-prompt-injection defense. See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
+There is no live LLM, retrieval system, Gorgias/Shopify/carrier integration,
+customer identity, authentication, distributed worker, production observability,
+AWS deployment, SLO, production benchmark, or business outcome. The local async
+and SQL evidence is reproducible engineering evidence, not a scale claim. Read
+[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) before adapting the code.

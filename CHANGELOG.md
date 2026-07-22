@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.3.0 — 2026-07-22
+
+- Added a real Next.js/React operator workbench in strict TypeScript with typed
+  API interaction, loading/empty/error/evaluation/review states, component tests,
+  a production build, and full-stack Playwright verification.
+- Added a FastAPI service with bounded request models, OpenAPI, pagination,
+  explicit conflicts, health/readiness, aggregate metrics, and persisted human
+  review with no send endpoint.
+- Added versioned relational tickets, evaluations, and citations with constraints,
+  queue indexes, Alembic migration, local SQLite verification, and a PostgreSQL
+  Docker path.
+- Added concurrent order/policy context collection under a timeout boundary,
+  reproducible local benchmark evidence, and an actual SQL query-plan
+  investigation.
+- Added locked Python/Node dependency graphs, Docker/Compose configuration,
+  expanded least-privilege CI, integrated architecture/demo/verification/
+  limitations documentation, and a production-build debugging case study.
+
 ## 0.2.0 — 2026-07-22
 
 - Added an offline deterministic control engine for draft, admin-action, and

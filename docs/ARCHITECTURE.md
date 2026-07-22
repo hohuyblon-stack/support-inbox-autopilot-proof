@@ -1,65 +1,151 @@
 # Architecture
 
-## Purpose
+## Purpose and trust boundary
 
-The repository proves a control boundary, not an autonomous support agent. Its
-job is to make routing and review behavior inspectable with synthetic inputs.
+The workbench is one real local vertical slice: an operator creates a synthetic
+case, the API validates and persists it, two independent context reads run under
+a shared timeout, deterministic safety rules gate a recorded provider result,
+and the decision plus citations are stored for human review.
 
-```mermaid
-flowchart TD
-    F["evaluation/scenarios.json"] --> E["evaluate.py"]
-    E --> C["readiness.evaluate_ticket"]
-    C --> V["Input and approved-source validation"]
-    V --> D["Deterministic safety router"]
-    D -->|"action or high risk"| Q["Human queue state"]
-    D -->|"draft eligible"| P["RecordedProvider.generate"]
-    P --> S["Structured output gate"]
-    S -->|"grounded and confidence >= 0.8"| R["Review-only draft"]
-    S -->|"failed, malformed, ungrounded, or low confidence"| Q
-    R --> H["record_human_review"]
-    H --> X["External action remains outside this repository"]
-    C --> O["evaluation/results.json"]
+It deliberately has no shopper-send, refund, cancellation, order-edit, Gorgias,
+Shopify, carrier, or model-provider adapter. `automatic_send_allowed` is false in
+the domain result, API response, database constraint, component tests, and E2E
+flow. This is defense in depth around an absent capability, not a disabled
+production integration.
+
+```text
+Browser
+  Next.js 16 / React 19 / strict TypeScript
+  intake -> queue -> evaluation -> review states
+                  |
+                  v
+FastAPI / Pydantic / OpenAPI
+  validation -> error taxonomy -> bounded pagination -> metrics
+        |                            |
+        v                            v
+SQLAlchemy async                deterministic safety engine
+  tickets                           recorded provider output
+  evaluations                       source/confidence/failure gates
+  citations                              ^
+        |                                |
+        +---------- async context -------+
+                    order + policy reads
+                    gather + timeout
 ```
 
-## Components
+## Browser boundary
 
-### Input fixture
+`apps/web/components/TicketWorkbench.tsx` is a client component because the
+workflow owns mutable form, queue, error, evaluation, and review state. The page
+shell and metadata remain server-renderable and the production build prerenders
+the route.
 
-Each scenario names a synthetic ticket, expected route, approved source IDs,
-and—only for draft-eligible cases—a recorded provider result or timeout. No
-scenario contains a real shopper, order, policy export, or platform credential.
+The typed client in `apps/web/lib/api.ts` is the only HTTP boundary. It maps
+non-success responses to safe categories, never handles a credential, and
+exposes no send method. Loading, empty, error, ticket, evaluation, approval, and
+rejection states are tested. The mobile layout stacks the same workflow rather
+than hiding decision evidence.
 
-### Deterministic router
+## API and domain boundary
 
-`readiness.py` validates shape and context before the provider boundary. Admin
-write intents and discretionary/high-risk intents never call the provider.
-Missing WISMO context, policy conflicts, unsupported intents, and the small
-prompt-injection tripwire fail closed to escalation.
+`apps/api/app/main.py` owns HTTP contracts and persistence orchestration.
+Pydantic models bound string lengths, enum-like fields, source counts, pagination
+and review input. FastAPI publishes the resulting OpenAPI schema.
 
-### Provider boundary
+`readiness.py` remains the deterministic domain gate. It handles malformed
+context, high-risk/admin intents, policy conflict, source allowlisting,
+confidence, provider failures, injection tripwire, and human review without
+depending on FastAPI or SQLAlchemy. `apps/api/app/service.py` adapts persisted
+ticket state and recorded context to that engine.
 
-`RecordedProvider` is deterministic and offline. It models the contract a live
-provider adapter would need to satisfy: a non-empty draft, a list of cited source
-IDs, and a numeric confidence. The control engine catches provider failures and
-does not copy exception content into the public result.
+HTTP errors are bounded and explicit:
 
-### Output gate
+- `422` for request validation;
+- `409 external_id_conflict` for a repeated external identity;
+- `400 invalid_cursor` for an unknown pagination cursor;
+- `404` for missing ticket/evaluation state; and
+- `503 database_unavailable` for readiness failure.
 
-The gate rejects citations outside the ticket's approved source set and results
-below the explicit `0.8` fixture threshold. Passing output becomes a draft for
-review, never a shopper-facing message.
+## Relational model and transaction boundary
 
-### Human review
+The Alembic migration creates three relations:
 
-`record_human_review` records approval or rejection. Approval may mark a draft
-ready for a separately authorized human send, but the engine continues to expose
-`automatic_send_allowed=false` and has no external adapter.
+- `tickets`: bounded input, provider-fixture mode, workflow status, and creation
+  time; `external_id` is unique;
+- `evaluations`: route/reason/draft/confidence, review and external-action state,
+  measured local latency, and a check constraint that forbids automatic send;
+- `evaluation_citations`: normalized source IDs with a unique
+  `(evaluation_id, source_id)` constraint.
 
-## Tradeoffs
+`ix_tickets_status_created_at_id` supports the bounded queue query and its stable
+ID tie-breaker. The committed
+query investigation records the actual local plan and workload; it is not a
+production throughput claim.
 
-- Standard-library Python keeps the proof reproducible and CI offline.
-- Explicit intent sets make the safety policy easy to inspect but are not a
-  substitute for a maintained production taxonomy.
-- Recorded outputs prove control behavior, not model quality.
-- The public page remains a self-contained static artifact; the evaluator is a
-  separate executable evidence path rather than a cosmetic UI backend.
+The API does not hold a database transaction while waiting for context adapters.
+It reads and snapshots the ticket, closes that session, runs bounded async work,
+then opens a short write transaction to persist the evaluation and ticket state.
+A real distributed design would also need a durable job claim, lease/outbox,
+idempotent provider contract, and crash recovery between remote effect and local
+commit.
+
+SQLite provides a zero-service local/test path. The Compose path uses PostgreSQL
+with the same SQLAlchemy model and Alembic migration. Docker was unavailable on
+the execution machine, so PostgreSQL runtime remains reviewable configuration,
+not locally observed operating evidence.
+
+## Async boundary
+
+`collect_context` starts the order and policy adapters together with
+`asyncio.gather` inside `asyncio.timeout`. The rendezvous test fails if one call
+waits for the other to finish, so it proves concurrent start without relying on
+fragile wall-clock timing. Timeout/failure maps to human escalation.
+
+The benchmark compares sequential and concurrent execution of those exact local
+adapters over a declared workload and environment. The adapter delay is recorded
+fixture behavior. The result demonstrates scheduling and measurement mechanics;
+it must not be generalized to a live provider, network, queue, or production
+latency.
+
+## Observability
+
+The API exposes health separately from database readiness. `/api/v1/metrics`
+returns aggregate ticket/evaluation/route counts and the automatic-send count;
+it includes no message, order ID, source ID, or user data. Evaluation records
+include their safe reason, citations, review state, action state, and measured
+local duration.
+
+Production still requires structured logs, traces, authenticated metrics,
+alerts, redaction policy, retention, service ownership, and incident runbooks.
+
+## Deployment path
+
+- Locked `uv.lock` and `package-lock.json` files make dependency resolution
+  reviewable.
+- CI runs deterministic Python, API, migration, SQL/performance, TypeScript,
+  component, production-build, dependency-audit, and cross-stack browser checks.
+- Dockerfiles separate build/runtime stages and use non-root runtime users.
+- Compose wires the web container, API, migration, PostgreSQL health, and local
+  ports without provisioning infrastructure.
+
+There is no claim of AWS operation. A production cloud step would require image
+digest pinning, registry and secret management, TLS/ingress, private database
+networking, backups, migrations as a controlled job, health/readiness policy,
+logs/metrics/alerts, cost notes, rollback, and explicit deployment authorization.
+
+## Key tradeoffs
+
+- **One repository, one journey.** The existing safety engine is reused rather
+  than duplicated in a fashionable microservice layout.
+- **Recorded provider, real boundaries.** The app proves API/data/async/UI
+  behavior without pretending a live model or platform contract exists.
+- **SQLite plus PostgreSQL path.** SQLite keeps review zero-service; PostgreSQL
+  configuration demonstrates the intended production-shaped relational path but
+  remains unverified here without Docker.
+- **No background queue yet.** The bounded concurrent work completes in the API
+  request so failure is easy to inspect. A queue would be required before slow or
+  durable production work, but adding one solely for keywords would obscure the
+  current proof.
+- **No authentication in a local proof.** The service binds to loopback in manual
+  commands and must not be exposed publicly. Production auth is a blocking gap,
+  not deferred polish.
