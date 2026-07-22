@@ -1,0 +1,864 @@
+{
+  "as_of": "2026-07-22",
+  "benchmark_scope": "A narrow support-readiness operator workflow that creates a case, evaluates grounded evidence, records a human decision, and exposes no automatic-send capability. It is not benchmarked as a replacement helpdesk or autonomous customer agent.",
+  "claim_limit": "Repository-local automation never emits MARKET_READY. Even structurally complete evidence remains pending independent human provenance review and an externally governed release decision.",
+  "criteria": [
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "api_backend_tests"
+          ],
+          "failures": [],
+          "id": "typed_api_and_persistence",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "frontend_types_components_and_build"
+          ],
+          "failures": [],
+          "id": "typed_frontend_contract",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "browser_api_database_journey"
+          ],
+          "failures": [],
+          "id": "browser_to_database_journey",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        }
+      ],
+      "critical": true,
+      "declared_status": "pass",
+      "effective_status": "pass",
+      "evidence": [
+        "apps/web/components/TicketWorkbench.tsx",
+        "apps/api/app/main.py",
+        "apps/web/tests/e2e/operator-flow.spec.ts"
+      ],
+      "gap": "The declared local create/evaluate/review slice is complete; multi-channel helpdesk breadth is outside scope.",
+      "id": "end_to_end_operator_flow",
+      "label": "End-to-end operator flow",
+      "market_expectation": "Current support workspaces make queue state, the selected case, its evidence, and the next operator decision inspectable in one coherent workflow.",
+      "missing_evidence": [],
+      "scored_points": 12.0,
+      "sources": [
+        "https://www.intercom.com/help/en/articles/6258745-the-inbox-explained"
+      ],
+      "sources_official": true,
+      "total_controls": 3,
+      "verified_controls": 3,
+      "weight": 12
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "offline_and_gate_unit_tests",
+            "fixture_reproduction"
+          ],
+          "failures": [],
+          "id": "allowlist_and_citation_regression",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "knowledge_retrieval_and_permission_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "versioned_knowledge_and_permissions_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "knowledge_retrieval_and_permission_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "live_versioned_knowledge_retrieval",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 10,
+          "record": "evaluation/market_evidence/live_knowledge_retrieval.json",
+          "required_acceptance_check_ids": [
+            "source_version_recorded",
+            "approved_content_retrieved",
+            "citation_matches_content",
+            "stale_source_rejected"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "audience_permission_enforcement",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 3,
+          "record": "evaluation/market_evidence/knowledge_permissions_review.json",
+          "required_acceptance_check_ids": [
+            "authorized_source_available",
+            "unauthorized_source_blocked"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "partial",
+      "effective_status": "partial",
+      "evidence": [
+        "readiness.py",
+        "apps/api/app/providers.py",
+        "evaluation/results.json"
+      ],
+      "gap": "The allowlist, citations and confidence gates execute, but source content and audience permissions are recorded fixtures rather than retrieved, versioned knowledge.",
+      "id": "trusted_source_grounding",
+      "label": "Trusted-source grounding",
+      "market_expectation": "Market systems manage real knowledge sources and constrain answers to approved, audience-appropriate content rather than source identifiers alone.",
+      "missing_evidence": [],
+      "scored_points": 2.5,
+      "sources": [
+        "https://docs.gorgias.com/en-US/how-gorgiass-ai-agent-works-1997817",
+        "https://www.intercom.com/help/en/articles/9440354-knowledge-sources-to-power-ai-agents-and-self-serve-support"
+      ],
+      "sources_official": true,
+      "total_controls": 4,
+      "verified_controls": 1,
+      "weight": 10
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "offline_and_gate_unit_tests",
+            "api_backend_tests"
+          ],
+          "failures": [],
+          "id": "safe_failure_routing",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "browser_api_database_journey"
+          ],
+          "failures": [],
+          "id": "visible_human_decision_state",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        }
+      ],
+      "critical": true,
+      "declared_status": "pass",
+      "effective_status": "pass",
+      "evidence": [
+        "readiness.py",
+        "apps/api/tests/test_api_workflow.py",
+        "docs/LIMITATIONS.md"
+      ],
+      "gap": "The declared workbench route is safe and send-incapable; it does not yet hand a live conversation to a real team/channel.",
+      "id": "human_handoff_and_safe_failure",
+      "label": "Human handoff and safe failure",
+      "market_expectation": "Sensitive, uncertain, frustrated, unavailable-provider, or otherwise unresolved cases must reach a visible human-owned state with a safe fallback.",
+      "missing_evidence": [],
+      "scored_points": 10.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/customize-how-ai-agent-hands-over-to-your-team-6008591",
+        "https://support.zendesk.com/hc/en-us/articles/8357756604186-Configuring-escalation-strategies-and-flows-for-AI-agents"
+      ],
+      "sources_official": true,
+      "total_controls": 2,
+      "verified_controls": 2,
+      "weight": 10
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "api_backend_tests",
+            "browser_api_database_journey"
+          ],
+          "failures": [],
+          "id": "reason_and_citation_review",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "feedback_audit_and_correction_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "governed_feedback_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "feedback_audit_and_correction_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "identified_append_only_feedback",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 10,
+          "record": "evaluation/market_evidence/reviewer_feedback_audit.json",
+          "required_acceptance_check_ids": [
+            "reviewer_identity_recorded",
+            "history_append_only",
+            "source_feedback_recorded"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "governed_knowledge_correction",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 3,
+          "record": "evaluation/market_evidence/knowledge_correction_review.json",
+          "required_acceptance_check_ids": [
+            "correction_owner_recorded",
+            "correction_reviewed",
+            "regression_rerun"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "partial",
+      "effective_status": "partial",
+      "evidence": [
+        "apps/web/components/TicketWorkbench.tsx",
+        "apps/api/app/models.py",
+        "docs/BACKEND_ENGINEERING_EVIDENCE.md"
+      ],
+      "gap": "The UI exposes route, reason, citations, confidence and review status, but it lacks reviewer identity, append-only feedback history, source rating and knowledge-correction workflow.",
+      "id": "reasoning_source_review_and_feedback",
+      "label": "Reasoning, source review, and feedback loop",
+      "market_expectation": "Reviewers can inspect why an answer was produced, see the sources used, rate quality, and feed corrections back into governed knowledge.",
+      "missing_evidence": [],
+      "scored_points": 2.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/coach-ai-agent-and-give-feedback-to-improve-its-responses-500892",
+        "https://www.intercom.com/help/en/articles/7120684-fin-ai-agent-explained"
+      ],
+      "sources_official": true,
+      "total_controls": 4,
+      "verified_controls": 1,
+      "weight": 8
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "offline_and_gate_unit_tests",
+            "fixture_reproduction"
+          ],
+          "failures": [],
+          "id": "offline_fixture_regression",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "api_backend_tests",
+            "frontend_types_components_and_build",
+            "browser_api_database_journey"
+          ],
+          "failures": [],
+          "id": "fullstack_regression",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        }
+      ],
+      "critical": true,
+      "declared_status": "pass",
+      "effective_status": "pass",
+      "evidence": [
+        "evaluation/scenarios.json",
+        "tests/test_readiness.py",
+        "apps/api/tests",
+        "apps/web/tests/e2e/operator-flow.spec.ts",
+        ".github/workflows/ci.yml"
+      ],
+      "gap": "The recorded regression harness is strong for this slice; representative real-store cases and a publish/rollback lifecycle remain absent.",
+      "id": "prepublish_test_and_regression",
+      "label": "Pre-publish test and regression gate",
+      "market_expectation": "Behavior changes are previewed against representative cases before reaching customers and are protected by repeatable regression checks.",
+      "missing_evidence": [],
+      "scored_points": 8.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/set-up-and-go-live-with-ai-agent-500219",
+        "https://docs.gorgias.com/en-US/preview-ai-agent-responses-with-test-conversations-828087"
+      ],
+      "sources_official": true,
+      "total_controls": 2,
+      "verified_controls": 2,
+      "weight": 8
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "authentication_role_and_tenant_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "authentication_and_tenant_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "authentication_role_and_tenant_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "authentication_role_enforcement_review",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 6,
+          "record": "evaluation/market_evidence/authentication_roles_review.json",
+          "required_acceptance_check_ids": [
+            "unauthenticated_access_denied",
+            "role_boundary_enforced",
+            "reviewer_identity_attributed"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "tenant_isolation_security_review",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 6,
+          "record": "evaluation/market_evidence/tenant_isolation_review.json",
+          "required_acceptance_check_ids": [
+            "cross_tenant_read_denied",
+            "cross_tenant_write_denied",
+            "tenant_context_audited"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "fail",
+      "effective_status": "fail",
+      "evidence": [
+        "SECURITY.md",
+        "docs/LIMITATIONS.md"
+      ],
+      "gap": "No authentication, authorization, reviewer identity, tenancy, retention policy, or untrusted-network deployment boundary exists.",
+      "id": "authentication_roles_and_tenant_isolation",
+      "label": "Authentication, roles, and tenant isolation",
+      "market_expectation": "A market system protects customer and administrative surfaces with authenticated identities, role-scoped permissions, and tenant/data isolation.",
+      "missing_evidence": [],
+      "scored_points": 0.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/coach-ai-agent-and-give-feedback-to-improve-its-responses-500892",
+        "https://support.zendesk.com/hc/en-us/articles/10412442245914-Workflow-recipe-Using-an-AI-agent-to-collect-customer-info-and-immediately-escalate-to-a-human-agent"
+      ],
+      "sources_official": true,
+      "total_controls": 3,
+      "verified_controls": 0,
+      "weight": 10
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "live_contract_integration_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "live_read_only_contract_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "live_contract_integration_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "read_only_platform_provider_contract",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 10,
+          "record": "evaluation/market_evidence/live_contract_read_only.json",
+          "required_acceptance_check_ids": [
+            "read_only_case_retrieved",
+            "read_only_knowledge_retrieved",
+            "no_external_write_observed"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "live_contract_failure_boundaries",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 6,
+          "record": "evaluation/market_evidence/live_contract_failures.json",
+          "required_acceptance_check_ids": [
+            "timeout_routes_safe",
+            "rate_limit_routes_safe",
+            "malformed_response_routes_safe"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "fail",
+      "effective_status": "fail",
+      "evidence": [
+        "apps/api/app/providers.py",
+        "docs/LIMITATIONS.md"
+      ],
+      "gap": "There is no live Gorgias, Shopify, carrier, channel, model, retrieval or authorized action adapter.",
+      "id": "live_channel_platform_and_provider_contracts",
+      "label": "Live channel, platform, and provider contracts",
+      "market_expectation": "Operational products connect governed knowledge and authorized actions to real support channels and platform/provider contracts.",
+      "missing_evidence": [],
+      "scored_points": 0.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/ai-agent-explained-497772",
+        "https://support.zendesk.com/hc/en-us/articles/8724978128282-Getting-started-with-AI-agents"
+      ],
+      "sources_official": true,
+      "total_controls": 3,
+      "verified_controls": 0,
+      "weight": 10
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "api_backend_tests"
+          ],
+          "failures": [],
+          "id": "local_metric_contract",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "representative_outcome_monitoring_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "outcome_monitoring_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "representative_outcome_monitoring_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "representative_outcome_definitions",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 3,
+          "record": "evaluation/market_evidence/outcome_definition_review.json",
+          "required_acceptance_check_ids": [
+            "outcome_definitions_owner_approved",
+            "human_handoff_outcome_defined",
+            "quality_review_outcome_defined"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "quality_calibration_monitoring",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 20,
+          "record": "evaluation/market_evidence/quality_calibration.json",
+          "required_acceptance_check_ids": [
+            "sample_routes_independently_reviewed",
+            "false_draft_rate_recorded",
+            "unsafe_action_count_zero"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "partial",
+      "effective_status": "partial",
+      "evidence": [
+        "apps/api/app/main.py",
+        "evaluation/results.json",
+        "docs/ASYNC_BENCHMARK.md"
+      ],
+      "gap": "Local counts, routes and latency exist, but there are no real conversations, outcome definitions, trends, drill-down, satisfaction, alerts or quality-calibration loop.",
+      "id": "outcome_analytics_and_quality_monitoring",
+      "label": "Outcome analytics and quality monitoring",
+      "market_expectation": "Operators can filter/drill into conversation outcomes and monitor resolution, escalation, intent, response-time and quality trends using defined metrics.",
+      "missing_evidence": [],
+      "scored_points": 2.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/review-your-ai-agent-performance-931052",
+        "https://support.zendesk.com/hc/en-us/articles/8854858307610-What-are-the-conversation-statuses-for-AI-agents"
+      ],
+      "sources_official": true,
+      "total_controls": 4,
+      "verified_controls": 1,
+      "weight": 8
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "api_backend_tests"
+          ],
+          "failures": [],
+          "id": "persisted_decision_and_citation_state",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "immutable_audit_and_privacy_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "immutable_audit_privacy_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "immutable_audit_and_privacy_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "immutable_reviewer_audit",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 10,
+          "record": "evaluation/market_evidence/immutable_review_audit.json",
+          "required_acceptance_check_ids": [
+            "reviewer_identity_immutable",
+            "decision_history_append_only",
+            "citation_history_preserved"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "privacy_governance_review",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 1,
+          "record": "evaluation/market_evidence/privacy_governance_review.json",
+          "required_acceptance_check_ids": [
+            "retention_owner_approved",
+            "deletion_path_reviewed",
+            "sensitive_data_redacted",
+            "access_boundary_reviewed"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "partial",
+      "effective_status": "partial",
+      "evidence": [
+        "apps/api/app/models.py",
+        "SECURITY.md",
+        "docs/LIMITATIONS.md"
+      ],
+      "gap": "Decision/citation state is inspectable and fixtures contain no customer data, but review history is mutable and identity, encryption, retention, deletion, consent and privacy operations are absent.",
+      "id": "audit_governance_and_privacy",
+      "label": "Audit, governance, and privacy",
+      "market_expectation": "AI-assisted support retains inspectable response/source/action history while protecting customer data through explicit access, privacy and governance controls.",
+      "missing_evidence": [],
+      "scored_points": 2.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/how-gorgiass-ai-agent-works-1997817",
+        "https://docs.gorgias.com/en-US/security-and-privacy-faq-for-gorgias-ai-agent-1997987"
+      ],
+      "sources_official": true,
+      "total_controls": 4,
+      "verified_controls": 1,
+      "weight": 8
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "api_backend_tests",
+            "frontend_types_components_and_build"
+          ],
+          "failures": [],
+          "id": "local_health_and_migration_regression",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "check_ids": [
+            "recovery_and_observability_tests"
+          ],
+          "failures": [
+            "required_technical_checks_not_observed"
+          ],
+          "id": "recovery_and_observability_implementation",
+          "kind": "technical_check",
+          "missing_check_ids": [
+            "recovery_and_observability_tests"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "production_monitoring_and_incident_operation",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 1,
+          "record": "evaluation/market_evidence/production_operations_review.json",
+          "required_acceptance_check_ids": [
+            "health_signal_observed",
+            "alert_owner_acknowledged",
+            "incident_path_exercised"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "backup_restore_and_rollback_drill",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 1,
+          "record": "evaluation/market_evidence/recovery_drill.json",
+          "required_acceptance_check_ids": [
+            "backup_created",
+            "restore_verified",
+            "rollback_time_recorded"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "partial",
+      "effective_status": "partial",
+      "evidence": [
+        ".github/workflows/ci.yml",
+        "docker-compose.yml",
+        "docs/DOCKER_POSTGRES_RUNBOOK.md",
+        "docs/LIMITATIONS.md"
+      ],
+      "gap": "Health, migration ordering, locked builds and disposable PostgreSQL smoke pass; production logs, alerts, SLOs, backups, restore, rollback and incident operation do not.",
+      "id": "operability_observability_and_recovery",
+      "label": "Operability, observability, and recovery",
+      "market_expectation": "A market-quality service has health/readiness, safe failures, controlled deploy/migration behavior, monitoring, incident ownership, backup/recovery and rollback evidence.",
+      "missing_evidence": [],
+      "scored_points": 2.0,
+      "sources": [
+        "https://www.intercom.com/help/en/articles/7837535-fin-ai-agent-faqs",
+        "https://docs.gorgias.com/en-US/how-ai-agent-improves-over-time-1993179"
+      ],
+      "sources_official": true,
+      "total_controls": 4,
+      "verified_controls": 1,
+      "weight": 8
+    },
+    {
+      "controls": [
+        {
+          "check_ids": [
+            "frontend_types_components_and_build",
+            "browser_api_database_journey"
+          ],
+          "failures": [],
+          "id": "responsive_focus_and_state_regression",
+          "kind": "technical_check",
+          "missing_check_ids": [],
+          "verified": true
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "independent_accessibility_review",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 3,
+          "record": "evaluation/market_evidence/accessibility_review.json",
+          "required_acceptance_check_ids": [
+            "keyboard_path_completed",
+            "screen_reader_labels_reviewed",
+            "zoom_overflow_reviewed"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": false,
+      "declared_status": "partial",
+      "effective_status": "partial",
+      "evidence": [
+        "apps/web/app/globals.css",
+        "apps/web/components/TicketWorkbench.test.tsx",
+        "apps/web/tests/e2e/operator-flow.spec.ts"
+      ],
+      "gap": "Responsive, focus, semantic state and overflow evidence exists, but no complete WCAG 2.2 AA, assistive-technology, zoom, contrast or browser-matrix audit exists.",
+      "id": "accessible_responsive_operator_experience",
+      "label": "Accessible responsive operator experience",
+      "market_expectation": "The workflow remains understandable and operable across viewport, keyboard, focus, error and pointer-target conditions.",
+      "missing_evidence": [],
+      "scored_points": 2.0,
+      "sources": [
+        "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html"
+      ],
+      "sources_official": true,
+      "total_controls": 2,
+      "verified_controls": 1,
+      "weight": 4
+    },
+    {
+      "controls": [
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "representative_operator_pilot",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 3,
+          "record": "evaluation/market_evidence/representative_operator_pilot.json",
+          "required_acceptance_check_ids": [
+            "representative_task_completed",
+            "unsafe_action_absent",
+            "operator_decision_recorded"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "buyer_workflow_acceptance",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 1,
+          "record": "evaluation/market_evidence/buyer_workflow_acceptance.json",
+          "required_acceptance_check_ids": [
+            "buyer_scope_accepted",
+            "acceptance_criteria_accepted",
+            "no_autonomous_send_confirmed"
+          ],
+          "verified": false
+        },
+        {
+          "failures": [
+            "observation_record_missing"
+          ],
+          "id": "controlled_live_outcome_review",
+          "kind": "external_observation",
+          "max_observation_age_days": 90,
+          "minimum_sample_size": 20,
+          "record": "evaluation/market_evidence/controlled_live_outcomes.json",
+          "required_acceptance_check_ids": [
+            "live_outcomes_independently_labeled",
+            "unsafe_external_action_count_zero",
+            "known_failure_rate_recorded"
+          ],
+          "verified": false
+        }
+      ],
+      "critical": true,
+      "declared_status": "fail",
+      "effective_status": "fail",
+      "evidence": [
+        "docs/LIMITATIONS.md",
+        "README.md"
+      ],
+      "gap": "No buyer interview, representative operator usability run, live store/channel, customer outcome, funded work or collected cash exists.",
+      "id": "buyer_user_and_market_validation",
+      "label": "Buyer, user, and market validation",
+      "market_expectation": "Quality is confirmed with representative users and live outcome evidence after controlled deployment, not inferred from authored fixtures or visual review.",
+      "missing_evidence": [],
+      "scored_points": 0.0,
+      "sources": [
+        "https://docs.gorgias.com/en-US/set-up-and-go-live-with-ai-agent-500219",
+        "https://docs.gorgias.com/en-US/review-your-ai-agent-performance-931052"
+      ],
+      "sources_official": true,
+      "total_controls": 3,
+      "verified_controls": 0,
+      "weight": 4
+    }
+  ],
+  "critical_failures": [
+    "trusted_source_grounding",
+    "reasoning_source_review_and_feedback",
+    "authentication_roles_and_tenant_isolation",
+    "live_channel_platform_and_provider_contracts",
+    "outcome_analytics_and_quality_monitoring",
+    "audit_governance_and_privacy",
+    "operability_observability_and_recovery",
+    "buyer_user_and_market_validation"
+  ],
+  "evidence_state": "INCOMPLETE",
+  "market_checked_at": "2026-07-22",
+  "market_source_age_days": 0,
+  "market_sources_stale": false,
+  "max_source_age_days": 90,
+  "policy_id": "support-readiness-market-v2",
+  "policy_sha256": "3b94c34c4644eacccd9ecceaff8e0da5b7980af44f6ca2a77abed85ce7daa85c",
+  "schema_version": "2.0",
+  "score": 42.5,
+  "system_under_test_sha256": "0fdaedbab8465ad2b3ec7a33ae2fdd2a7ececafc0b5f2ce3be48b2cbfe2f193c",
+  "threshold": 85.0,
+  "verdict": "NOT_MARKET_READY"
+}

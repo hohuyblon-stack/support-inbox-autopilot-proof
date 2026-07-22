@@ -1,0 +1,163 @@
+name: verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  offline-and-api:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - name: Install locked Python dependencies
+        run: uv sync --frozen --python 3.13
+      - name: Run behavior and public-page contracts
+        run: python3 -m unittest discover -s tests -v
+      - name: Reproduce the fixture result
+        run: |
+          python3 evaluate.py --output /tmp/evaluation-results.json
+          diff -u evaluation/results.json /tmp/evaluation-results.json
+      - name: Verify the explicit not-market-ready boundary
+        run: python3 market_quality.py --observed-checks-file evaluation/quality_harness_results.json --verify --allow-not-ready
+      - name: Run API, migration, container-contract, and evidence tests
+        run: uv run --python 3.13 pytest -q apps/api/tests
+      - name: Verify migration and checked-in performance evidence
+        env:
+          DATABASE_URL: sqlite+aiosqlite:////tmp/support-readiness-ci.sqlite3
+        run: |
+          uv run --python 3.13 python -m apps.api.app.migrations
+          uv run --python 3.13 python apps/api/scripts/benchmark_context.py --verify
+          uv run --python 3.13 python apps/api/scripts/explain_queue_query.py --verify
+          uv run --python 3.13 python -m compileall -q apps/api
+
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked Node dependencies
+        run: npm ci
+      - name: Verify types, components, and production build
+        run: npm run verify
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  browser-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked application dependencies
+        run: |
+          uv sync --frozen --python 3.13
+          npm ci --prefix apps/web
+          npx --prefix apps/web playwright install --with-deps chromium
+      - name: Run browser-to-API-to-database journey
+        working-directory: apps/web
+        run: npm run test:e2e
+
+  docker-postgres-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      POSTGRES_PASSWORD: ci-proof-only-20260722
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Validate and start the container stack
+        run: |
+          set -euo pipefail
+          docker compose config --quiet
+          docker compose up -d --build web
+      - name: Exercise PostgreSQL-backed API and production web container
+        run: |
+          set -euo pipefail
+          trap 'docker compose ps -a; docker compose logs --no-color' ERR
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/readyz >/tmp/ready.json \
+              && curl --fail --silent http://127.0.0.1:3000 >/tmp/home.html; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              exit 1
+            fi
+            sleep 2
+          done
+          grep -q 'Support readiness workbench' /tmp/home.html
+          curl --fail --silent \
+            -H 'Content-Type: application/json' \
+            -d '{"external_id":"CI-POSTGRES-1","intent":"wismo","message":"Where is my fictional order?","order_id":"ORDER-CI","tracking_status":"in_transit","approved_source_ids":["order-ci","policy-shipping"],"policy_conflict":false,"provider_mode":"success"}' \
+            http://127.0.0.1:8000/api/v1/tickets >/tmp/ticket.json
+          python3 - <<'PY' >/tmp/ticket-id
+          import json
+          print(json.load(open('/tmp/ticket.json'))['id'])
+          PY
+          curl --fail --silent -X POST \
+            "http://127.0.0.1:8000/api/v1/tickets/$(cat /tmp/ticket-id)/evaluate" \
+            >/tmp/evaluation.json
+          python3 - <<'PY'
+          import json
+          evaluation = json.load(open('/tmp/evaluation.json'))
+          assert evaluation['automatic_send_allowed'] is False
+          assert evaluation['route'] == 'draft'
+          assert evaluation['citations'] == ['order-ci', 'policy-shipping']
+          PY
+          curl --fail --silent http://127.0.0.1:8000/api/v1/metrics >/tmp/metrics.json
+          python3 - <<'PY'
+          import json
+          metrics = json.load(open('/tmp/metrics.json'))
+          assert metrics['tickets_total'] == 1
+          assert metrics['evaluations_total'] == 1
+          assert metrics['automatic_sends'] == 0
+          PY
+      - name: Stop the disposable stack
+        if: always()
+        run: docker compose down --volumes
+
+  market-release-gate:
+    name: market-release-gate (blocked pending external provenance approval)
+    needs: [offline-and-api, frontend, browser-integration, docker-postgres-smoke]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install the browser required by the local harness
+        run: |
+          npm ci --prefix apps/web
+          npx --prefix apps/web playwright install --with-deps chromium
+      - name: Run the fail-closed technical and market release gate
+        run: uv run --python 3.13 python scripts/quality_harness.py

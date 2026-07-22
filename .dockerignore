@@ -1,0 +1,15 @@
+.git
+.github
+.env
+.env.*
+.state
+.venv
+**/__pycache__
+**/*.pyc
+apps/web/.next
+apps/web/node_modules
+apps/web/playwright-report
+apps/web/test-results
+assets
+evaluation
+*.mp4

@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.state/
+.env
+.env.*
+!.env.example
+apps/web/.next/
+apps/web/node_modules/
+apps/web/playwright-report/
+apps/web/test-results/
+*.tsbuildinfo
+.DS_Store
