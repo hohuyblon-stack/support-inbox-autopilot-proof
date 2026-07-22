@@ -1,0 +1,197 @@
+{
+  "all_routes_matched": true,
+  "automatic_sends": 0,
+  "cases": [
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "draft",
+      "id": "routine-wismo",
+      "matched": true,
+      "observed_route": "draft",
+      "reason": "grounded_draft_ready_for_review",
+      "ticket_id": "T-001"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "delivered-not-received",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "discretionary_or_high_risk_intent",
+      "ticket_id": "T-002"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "action",
+      "id": "eligible-return",
+      "matched": true,
+      "observed_route": "action",
+      "reason": "admin_action_requires_human",
+      "ticket_id": "T-003"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "return-exception",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "discretionary_or_high_risk_intent",
+      "ticket_id": "T-004"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "damaged-item",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "discretionary_or_high_risk_intent",
+      "ticket_id": "T-005"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "action",
+      "id": "address-change",
+      "matched": true,
+      "observed_route": "action",
+      "reason": "admin_action_requires_human",
+      "ticket_id": "T-006"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "draft",
+      "id": "product-question",
+      "matched": true,
+      "observed_route": "draft",
+      "reason": "grounded_draft_ready_for_review",
+      "ticket_id": "T-007"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "draft",
+      "id": "discount-policy",
+      "matched": true,
+      "observed_route": "draft",
+      "reason": "grounded_draft_ready_for_review",
+      "ticket_id": "T-008"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "chargeback-threat",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "discretionary_or_high_risk_intent",
+      "ticket_id": "T-009"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "action",
+      "id": "cancellation",
+      "matched": true,
+      "observed_route": "action",
+      "reason": "admin_action_requires_human",
+      "ticket_id": "T-010"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "wholesale",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "discretionary_or_high_risk_intent",
+      "ticket_id": "T-011"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "draft",
+      "id": "international-shipping",
+      "matched": true,
+      "observed_route": "draft",
+      "reason": "grounded_draft_ready_for_review",
+      "ticket_id": "T-012"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "missing-order-information",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "missing_required_context",
+      "ticket_id": "T-013"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "draft",
+      "id": "gift-policy",
+      "matched": true,
+      "observed_route": "draft",
+      "reason": "grounded_draft_ready_for_review",
+      "ticket_id": "T-014"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "draft",
+      "id": "return-policy",
+      "matched": true,
+      "observed_route": "draft",
+      "reason": "grounded_draft_ready_for_review",
+      "ticket_id": "T-015"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "policy-conflict",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "policy_conflict",
+      "ticket_id": "T-016"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "low-confidence",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "low_confidence",
+      "ticket_id": "T-017"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "provider-timeout",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "provider_failure",
+      "ticket_id": "T-018"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "prompt-injection",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "prompt_injection_detected",
+      "ticket_id": "T-019"
+    },
+    {
+      "automatic_send_allowed": false,
+      "expected_route": "escalate",
+      "id": "malformed-input",
+      "matched": true,
+      "observed_route": "escalate",
+      "reason": "malformed_input",
+      "ticket_id": "T-020"
+    }
+  ],
+  "claim_limit": "Synthetic routing evidence only; not live accuracy or client impact.",
+  "environment": "offline_deterministic_fixture_run",
+  "fixture_count": 20,
+  "passed": 20,
+  "provider_boundary": "recorded_fixture_only_no_network",
+  "route_counts": {
+    "action": 3,
+    "draft": 6,
+    "escalate": 11
+  },
+  "schema_version": "1.0"
+}
