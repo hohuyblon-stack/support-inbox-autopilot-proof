@@ -91,8 +91,9 @@ commit.
 
 SQLite provides a zero-service local/test path. The Compose path uses PostgreSQL
 with the same SQLAlchemy model and Alembic migration. Docker was unavailable on
-the execution machine, so PostgreSQL runtime remains reviewable configuration,
-not locally observed operating evidence.
+the local execution machine, but the draft-PR `docker-postgres-smoke` job built
+the images, ran the migration, reached both health endpoints, and exercised one
+create/evaluate/metrics path against the disposable PostgreSQL service.
 
 ## Async boundary
 
@@ -139,9 +140,9 @@ logs/metrics/alerts, cost notes, rollback, and explicit deployment authorization
   than duplicated in a fashionable microservice layout.
 - **Recorded provider, real boundaries.** The app proves API/data/async/UI
   behavior without pretending a live model or platform contract exists.
-- **SQLite plus PostgreSQL path.** SQLite keeps review zero-service; PostgreSQL
-  configuration demonstrates the intended production-shaped relational path but
-  remains unverified here without Docker.
+- **SQLite plus PostgreSQL path.** SQLite keeps local review zero-service; the
+  disposable CI stack verifies PostgreSQL migration and a narrow smoke journey.
+  Neither path proves production data distribution, recovery or capacity.
 - **No background queue yet.** The bounded concurrent work completes in the API
   request so failure is easy to inspect. A queue would be required before slow or
   durable production work, but adding one solely for keywords would obscure the

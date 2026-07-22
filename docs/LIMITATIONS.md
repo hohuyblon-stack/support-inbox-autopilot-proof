@@ -37,11 +37,13 @@
 
 ## Data and distributed reliability
 
-- SQLite is the observed local/test path. It is not evidence of production
-  PostgreSQL behavior, multi-region availability, encryption, backup/restore,
-  retention, deletion, residency, or subject-request handling.
-- Docker was unavailable on this execution machine. The PostgreSQL Compose path
-  and Dockerfiles are reviewable configuration with `UNVERIFIED_RUNTIME` status.
+- SQLite is the observed local/test path. A disposable draft-PR CI job also
+  builds the Compose stack, migrates PostgreSQL and exercises one narrow API/web
+  smoke path. Neither is evidence of production data distribution, multi-region
+  availability, encryption, backup/restore, retention, deletion, residency or
+  subject-request handling.
+- Docker was unavailable on the local execution machine. Container runtime
+  evidence comes from the bounded CI job, not from a local or deployed environment.
 - The API runs bounded context reads inside one request. There is no durable queue,
   job claim, outbox, lease, dead-letter state, distributed idempotency, worker
   autoscaling, backpressure across processes, or crash recovery after a remote

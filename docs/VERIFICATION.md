@@ -95,9 +95,11 @@ docker compose config
 docker compose up --build
 ```
 
-The current execution machine did not provide Docker, so the files can be
-structurally reviewed but the PostgreSQL container path is `UNVERIFIED_RUNTIME`.
-Do not convert a successful SQLite run into a PostgreSQL or cloud claim.
+The current local execution machine did not provide Docker. The draft-PR
+`docker-postgres-smoke` job therefore builds and starts the production images,
+runs Alembic against PostgreSQL 17, checks the API/web surfaces, and exercises a
+create/evaluate/metrics journey with zero automatic sends. This is disposable
+CI evidence, not a production, managed-database or cloud-operation claim.
 
 ## 8. Security and source hygiene
 
@@ -114,8 +116,8 @@ was installed or executed from an untrusted source.
 
 - live LLM/retrieval quality, provider cost, latency, rate limits, or availability;
 - Gorgias, Shopify, carrier, order, refund, email, or shopper-send behavior;
-- PostgreSQL runtime, distributed workers, AWS operation, production security,
-  traffic, SLOs, observability, or incident response;
+- production PostgreSQL behavior, distributed workers, AWS operation, production
+  security, traffic, SLOs, observability, or incident response;
 - buyer demand, client delivery, support impact, revenue, or collected cash; or
 - full assistive-technology, cross-browser, penetration, supply-chain, or load
   testing beyond the exact checks listed above.

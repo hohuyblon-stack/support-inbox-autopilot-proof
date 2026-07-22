@@ -15,8 +15,9 @@
   reproducible local benchmark evidence, and an actual SQL query-plan
   investigation.
 - Added locked Python/Node dependency graphs, Docker/Compose configuration,
-  expanded least-privilege CI, integrated architecture/demo/verification/
-  limitations documentation, and a production-build debugging case study.
+  expanded least-privilege CI with a disposable PostgreSQL stack smoke test,
+  integrated architecture/demo/verification/limitations documentation, and a
+  production-build debugging case study.
 
 ## 0.2.0 — 2026-07-22
 

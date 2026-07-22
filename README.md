@@ -22,7 +22,7 @@ escalation?
 |---|---|---|
 | Browser workflow | Next.js/React interface in strict TypeScript with intake, queue, decision, loading, empty, error, mobile, and review states | Local workbench; no customer-facing deployment |
 | API | FastAPI request/response validation, bounded pagination, OpenAPI, health/readiness, metrics, explicit conflicts, and API tests | No authentication or public multi-tenant service |
-| Relational state | SQLAlchemy ticket/evaluation/citation model, constraints, indexes, Alembic migration, async SQLite test path, and PostgreSQL Docker path | PostgreSQL container path is reviewable but was not run on the current machine because Docker is unavailable |
+| Relational state | SQLAlchemy ticket/evaluation/citation model, constraints, indexes, Alembic migration, async SQLite test path, and PostgreSQL Docker path exercised in disposable CI | No production data distribution, backup/restore, concurrency or managed-database evidence |
 | Async work | Two independent context reads start concurrently under one timeout and cancellation boundary | Deterministic local adapter with recorded delay; no live network/provider throughput claim |
 | AI/provider control | Structured recorded output, source allowlist, confidence gate, timeout/failure routing, prompt-injection tripwire, and 20 fixtures | No live model, retrieval system, latency/cost result, or accuracy claim |
 | Human oversight | Approval/rejection is persisted; `automatic_send_allowed` is constrained false and the application exposes no send endpoint or button | Approval records readiness only; it cannot contact a shopper or mutate an order |
@@ -86,9 +86,10 @@ npm run dev -- --hostname 127.0.0.1 --port 3000
 Open `http://127.0.0.1:3000`. API documentation is available locally at
 `http://127.0.0.1:8000/docs`.
 
-The Docker Compose path uses PostgreSQL and production containers. It is a
-reviewable deployment path, not evidence that this branch was operated in a
-cloud account:
+The Docker Compose path uses PostgreSQL and production containers. The draft-PR
+smoke job builds the stack, runs the migration, checks health, and exercises a
+create/evaluate/metrics path. This is disposable CI evidence, not evidence that
+the branch was operated in a cloud or production account:
 
 ```bash
 docker compose up --build

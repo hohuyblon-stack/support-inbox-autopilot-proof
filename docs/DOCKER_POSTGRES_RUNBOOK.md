@@ -31,10 +31,12 @@ ORM metadata.
 ## Verification status
 
 The Python migration CLI and SQLite migration behavior are automated and pass
-locally. Alembic also generated the complete PostgreSQL 17-compatible offline
-DDL without connecting to a server, and the Compose file has structural tests.
-Docker was not installed on the 2026-07-22 verification machine, so image
-builds, PostgreSQL runtime migration, container health checks and the integrated
-container journey remain
-`UNVERIFIED`. Run the commands above on a Docker-capable machine before calling
-the container path ready.
+locally. Docker was not installed on the 2026-07-22 local verification machine.
+The draft-PR `docker-postgres-smoke` job supplied the independent runtime gate:
+it built both images, started PostgreSQL 17, ran Alembic before API startup,
+reached the API and web health paths, and verified one create/evaluate/metrics
+journey with zero automatic sends.
+
+That disposable CI result verifies the narrow container path only. It does not
+prove production networking, secrets, backup/restore, traffic, observability,
+managed PostgreSQL or cloud operation.
