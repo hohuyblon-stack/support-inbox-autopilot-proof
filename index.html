@@ -96,6 +96,7 @@
       color: #6c4600;
       font-size: 12px;
       font-weight: 800;
+      text-decoration: none;
       text-transform: uppercase;
     }
     .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #b47700; }
@@ -371,7 +372,7 @@
       </a>
       <div class="top-meta">
         <span>15 synthetic messages · 0 shopper sends</span>
-        <span class="status">Internal QA</span>
+        <a class="status" href="docs/MARKET_QUALITY_GATE.md">NOT_MARKET_READY · internal rubric 42.5/100 · threshold 85</a>
       </div>
     </div>
   </header>
@@ -396,6 +397,7 @@
             <div><dt>Environment</dt><dd>Aurora Threads, a synthetic demo store</dd></div>
             <div><dt>Mechanism</dt><dd>Source → route → draft → human action</dd></div>
             <div><dt>Control</dt><dd>Every output is review-only; no shopper send</dd></div>
+            <div><dt>Market gate</dt><dd><strong>NOT_MARKET_READY · internal readiness rubric 42.5/100 · threshold 85 · 8 critical gaps.</strong> <a href="docs/MARKET_QUALITY_GATE.md">Inspect the blocking evidence controls.</a></dd></div>
             <div><dt>Claim limit</dt><dd>Independent work; not affiliated with or endorsed by Gorgias or Shopify</dd></div>
           </dl>
         </aside>

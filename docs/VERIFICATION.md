@@ -112,18 +112,42 @@ No match is the expected result for the high-confidence pattern check. GitHub
 secret scanning and push protection remain separate remote controls. No scanner
 was installed or executed from an untrusted source.
 
-## 9. Full technical and market-quality harness
+## 9. Local technical and market-readiness evidence harness
 
 ```bash
 uv run --python 3.13 python scripts/quality_harness.py --allow-not-ready
-python3 market_quality.py --verify --allow-not-ready
+python3 market_quality.py \
+  --observed-checks-file evaluation/quality_harness_results.json \
+  --verify --allow-not-ready
 ```
 
-The full harness currently reports 11/11 technical checks passing and the market
-gate at `NOT_MARKET_READY`, 53/85, with eight critical gaps. The exception flag
-only allows the known failing baseline to be reproduced. Run without that flag
-for the real release gate; it exits non-zero until all critical criteria pass and
-the score reaches 85. See
+The local harness currently reports 11/11 technical checks passing. The internal
+readiness-evidence rubric is 42.5/100 against threshold 85, with eight critical
+gaps, and the verdict is `NOT_MARKET_READY`. The exception flag only allows that
+known failing baseline to be reproduced. Run without the flag for the local
+release-candidate gate; it exits non-zero. The GitHub aggregate is broader: it
+also requires the separate Docker/PostgreSQL job before running the blocked
+market-release job.
+
+The browser check forces fresh API and web processes (`CI=1`) so a service
+already listening on ports 8000/3000 cannot satisfy the harness accidentally.
+The whitespace check scans the committed tree from Git's empty-tree baseline
+and the current `HEAD` diff, so it remains meaningful in a clean CI checkout and
+in a local working tree.
+
+Snapshot verification pins the committed `as_of` date only for byte-stable
+comparison. Before reproducing that snapshot, both commands independently check
+the market-source date and every existing external-observation date against the
+actual current date. A once-valid pilot therefore cannot stay valid by replaying
+an old snapshot.
+
+The policy fingerprint covers the benchmark scope, research receipt, exact
+sources/expectations/evidence, weights, critical flags, implementation checks,
+observation acceptance IDs, sample floors, and observation-age limits. That
+detects drift against the
+verifier in this commit; protected external review is still required because a
+repository owner could change both. Repository-local automation never emits a
+final market pass. See
 [`MARKET_QUALITY_GATE.md`](MARKET_QUALITY_GATE.md).
 
 ## What these checks do not prove

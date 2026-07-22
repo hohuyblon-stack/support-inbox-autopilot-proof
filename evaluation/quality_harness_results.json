@@ -3,6 +3,7 @@
   "checks": [
     {
       "command": "uv sync --frozen --python 3.13",
+      "environment_overrides": {},
       "id": "python_locked_install",
       "returncode": 0,
       "status": "PASS",
@@ -10,6 +11,7 @@
     },
     {
       "command": "npm ci",
+      "environment_overrides": {},
       "id": "node_locked_install",
       "returncode": 0,
       "status": "PASS",
@@ -17,6 +19,7 @@
     },
     {
       "command": "python -m unittest discover -s tests -v",
+      "environment_overrides": {},
       "id": "offline_and_gate_unit_tests",
       "returncode": 0,
       "status": "PASS",
@@ -33,6 +36,7 @@
     },
     {
       "command": "uv run --python 3.13 pytest -q apps/api/tests",
+      "environment_overrides": {},
       "id": "api_backend_tests",
       "returncode": 0,
       "status": "PASS",
@@ -40,6 +44,7 @@
     },
     {
       "command": "uv run --python 3.13 python apps/api/scripts/benchmark_context.py --verify",
+      "environment_overrides": {},
       "id": "async_benchmark_snapshot",
       "returncode": 0,
       "status": "PASS",
@@ -47,6 +52,7 @@
     },
     {
       "command": "uv run --python 3.13 python apps/api/scripts/explain_queue_query.py --verify",
+      "environment_overrides": {},
       "id": "sql_query_plan_snapshot",
       "returncode": 0,
       "status": "PASS",
@@ -54,6 +60,7 @@
     },
     {
       "command": "npm run verify",
+      "environment_overrides": {},
       "id": "frontend_types_components_and_build",
       "returncode": 0,
       "status": "PASS",
@@ -61,6 +68,7 @@
     },
     {
       "command": "npm audit --omit=dev --audit-level=high",
+      "environment_overrides": {},
       "id": "frontend_production_dependency_audit",
       "returncode": 0,
       "status": "PASS",
@@ -68,13 +76,17 @@
     },
     {
       "command": "npm run test:e2e",
+      "environment_overrides": {
+        "CI": "1"
+      },
       "id": "browser_api_database_journey",
       "returncode": 0,
       "status": "PASS",
       "working_directory": "apps/web"
     },
     {
-      "command": "git diff --check",
+      "command": "git diff --check '<empty-tree>' HEAD '&&' git diff --check HEAD",
+      "environment_overrides": {},
       "id": "whitespace_gate",
       "returncode": 0,
       "status": "PASS",
@@ -82,6 +94,7 @@
     }
   ],
   "claim_limit": "Technical execution cannot substitute for live contracts, production operation, representative user validation, buyer demand, or outcomes.",
+  "execution_scope": "local_release_candidate",
   "market_critical_failures": [
     "trusted_source_grounding",
     "reasoning_source_review_and_feedback",
@@ -92,11 +105,15 @@
     "operability_observability_and_recovery",
     "buyer_user_and_market_validation"
   ],
-  "market_quality_score": 53.0,
+  "market_evidence_state": "INCOMPLETE",
+  "market_policy_id": "support-readiness-market-v2",
+  "market_policy_sha256": "3b94c34c4644eacccd9ecceaff8e0da5b7980af44f6ca2a77abed85ce7daa85c",
+  "market_quality_score": 42.5,
   "market_quality_threshold": 85.0,
   "market_quality_verdict": "NOT_MARKET_READY",
   "overall_verdict": "NOT_MARKET_READY",
   "schema_version": "1.0",
+  "system_under_test_sha256": "0fdaedbab8465ad2b3ec7a33ae2fdd2a7ececafc0b5f2ce3be48b2cbfe2f193c",
   "technical_checks_passed": 11,
   "technical_checks_total": 11,
   "technical_gate": "PASS"

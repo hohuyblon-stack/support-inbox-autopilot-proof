@@ -84,10 +84,16 @@
 
 ## Market-quality status
 
-- The full technical harness passes, but the dated market gate is 53/85 and
-  `NOT_MARKET_READY` because eight critical criteria remain failed or partial.
+- The local technical harness passes 11/11. The dated internal market-readiness
+  rubric is 42.5/100 against threshold 85, and the release verdict remains
+  `NOT_MARKET_READY` because eight critical criteria are failed or partial.
 - Passing authored fixtures, CI, visual review, Docker/PostgreSQL smoke, or a
   portfolio score cannot override missing identity/security, live contracts,
   governed feedback/outcomes/operations, or representative user/buyer evidence.
 - `--allow-not-ready` exists only to verify this honest baseline in a draft; it
   does not waive the release gate.
+- The repository-local fingerprint detects policy drift against the verifier at
+  this commit. It is not tamper-proof against an owner editing both policy and
+  verifier; protected review governance is still required. Local records also
+  cannot authenticate a real independent observer, so automated evaluation can
+  only reach structurally-complete-pending-provenance-review, never `MARKET_READY`.

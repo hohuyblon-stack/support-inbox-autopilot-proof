@@ -1,9 +1,52 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
+  "policy_id": "support-readiness-market-v2",
   "benchmark_scope": "A narrow support-readiness operator workflow that creates a case, evaluates grounded evidence, records a human decision, and exposes no automatic-send capability. It is not benchmarked as a replacement helpdesk or autonomous customer agent.",
   "market_checked_at": "2026-07-22",
   "max_source_age_days": 90,
   "threshold": 85,
+  "market_review_receipt": {
+    "schema_version": "1.0",
+    "reviewed_at": "2026-07-22",
+    "reviewer_relationship": "author_research_review",
+    "source_count": 18,
+    "source_urls_sha256": "bd5ad2ac49e5860c9ddef611e6ffb1a3151744c83a32bf5a3f4c88667e21f50b",
+    "criterion_claims_sha256": "0794aa362ccb9441045f23fa7054b84060785b3eea5e8bb5e575b625039c5823",
+    "retrieval_summary": "A bounded live check returned HTTP 200 for 17 official URLs; the W3C page returned 403 to curl and was successfully opened in the browser. This is author research provenance, not independent market validation."
+  },
+  "system_under_test_paths": [
+    "readiness.py",
+    "evaluate.py",
+    "market_quality.py",
+    "pyproject.toml",
+    "uv.lock",
+    "docker-compose.yml",
+    ".github/workflows/ci.yml",
+    "scripts",
+    "tests",
+    "evaluation/scenarios.json",
+    "evaluation/results.json",
+    "evaluation/market_quality_criteria.json",
+    "apps/api/Dockerfile",
+    "apps/api/app",
+    "apps/api/benchmarks",
+    "apps/api/migrations",
+    "apps/api/scripts",
+    "apps/api/sql",
+    "apps/api/tests",
+    "apps/web/Dockerfile",
+    "apps/web/app",
+    "apps/web/components",
+    "apps/web/lib",
+    "apps/web/tests",
+    "apps/web/next.config.ts",
+    "apps/web/package.json",
+    "apps/web/package-lock.json",
+    "apps/web/playwright.config.ts",
+    "apps/web/tsconfig.json",
+    "apps/web/vitest.config.ts",
+    "apps/web/vitest.setup.ts"
+  ],
   "criteria": [
     {
       "id": "end_to_end_operator_flow",
@@ -19,6 +62,23 @@
       ],
       "sources": [
         "https://www.intercom.com/help/en/articles/6258745-the-inbox-explained"
+      ],
+      "controls": [
+        {
+          "id": "typed_api_and_persistence",
+          "kind": "technical_check",
+          "check_ids": ["api_backend_tests"]
+        },
+        {
+          "id": "typed_frontend_contract",
+          "kind": "technical_check",
+          "check_ids": ["frontend_types_components_and_build"]
+        },
+        {
+          "id": "browser_to_database_journey",
+          "kind": "technical_check",
+          "check_ids": ["browser_api_database_journey"]
+        }
       ],
       "gap": "The declared local create/evaluate/review slice is complete; multi-channel helpdesk breadth is outside scope."
     },
@@ -38,6 +98,42 @@
         "https://docs.gorgias.com/en-US/how-gorgiass-ai-agent-works-1997817",
         "https://www.intercom.com/help/en/articles/9440354-knowledge-sources-to-power-ai-agents-and-self-serve-support"
       ],
+      "controls": [
+        {
+          "id": "allowlist_and_citation_regression",
+          "kind": "technical_check",
+          "check_ids": ["offline_and_gate_unit_tests", "fixture_reproduction"]
+        },
+        {
+          "id": "versioned_knowledge_and_permissions_implementation",
+          "kind": "technical_check",
+          "check_ids": ["knowledge_retrieval_and_permission_tests"]
+        },
+        {
+          "id": "live_versioned_knowledge_retrieval",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/live_knowledge_retrieval.json",
+          "minimum_sample_size": 10,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "source_version_recorded",
+            "approved_content_retrieved",
+            "citation_matches_content",
+            "stale_source_rejected"
+          ]
+        },
+        {
+          "id": "audience_permission_enforcement",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/knowledge_permissions_review.json",
+          "minimum_sample_size": 3,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "authorized_source_available",
+            "unauthorized_source_blocked"
+          ]
+        }
+      ],
       "gap": "The allowlist, citations and confidence gates execute, but source content and audience permissions are recorded fixtures rather than retrieved, versioned knowledge."
     },
     {
@@ -56,6 +152,18 @@
         "https://docs.gorgias.com/en-US/customize-how-ai-agent-hands-over-to-your-team-6008591",
         "https://support.zendesk.com/hc/en-us/articles/8357756604186-Configuring-escalation-strategies-and-flows-for-AI-agents"
       ],
+      "controls": [
+        {
+          "id": "safe_failure_routing",
+          "kind": "technical_check",
+          "check_ids": ["offline_and_gate_unit_tests", "api_backend_tests"]
+        },
+        {
+          "id": "visible_human_decision_state",
+          "kind": "technical_check",
+          "check_ids": ["browser_api_database_journey"]
+        }
+      ],
       "gap": "The declared workbench route is safe and send-incapable; it does not yet hand a live conversation to a real team/channel."
     },
     {
@@ -73,6 +181,42 @@
       "sources": [
         "https://docs.gorgias.com/en-US/coach-ai-agent-and-give-feedback-to-improve-its-responses-500892",
         "https://www.intercom.com/help/en/articles/7120684-fin-ai-agent-explained"
+      ],
+      "controls": [
+        {
+          "id": "reason_and_citation_review",
+          "kind": "technical_check",
+          "check_ids": ["api_backend_tests", "browser_api_database_journey"]
+        },
+        {
+          "id": "governed_feedback_implementation",
+          "kind": "technical_check",
+          "check_ids": ["feedback_audit_and_correction_tests"]
+        },
+        {
+          "id": "identified_append_only_feedback",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/reviewer_feedback_audit.json",
+          "minimum_sample_size": 10,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "reviewer_identity_recorded",
+            "history_append_only",
+            "source_feedback_recorded"
+          ]
+        },
+        {
+          "id": "governed_knowledge_correction",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/knowledge_correction_review.json",
+          "minimum_sample_size": 3,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "correction_owner_recorded",
+            "correction_reviewed",
+            "regression_rerun"
+          ]
+        }
       ],
       "gap": "The UI exposes route, reason, citations, confidence and review status, but it lacks reviewer identity, append-only feedback history, source rating and knowledge-correction workflow."
     },
@@ -94,6 +238,18 @@
         "https://docs.gorgias.com/en-US/set-up-and-go-live-with-ai-agent-500219",
         "https://docs.gorgias.com/en-US/preview-ai-agent-responses-with-test-conversations-828087"
       ],
+      "controls": [
+        {
+          "id": "offline_fixture_regression",
+          "kind": "technical_check",
+          "check_ids": ["offline_and_gate_unit_tests", "fixture_reproduction"]
+        },
+        {
+          "id": "fullstack_regression",
+          "kind": "technical_check",
+          "check_ids": ["api_backend_tests", "frontend_types_components_and_build", "browser_api_database_journey"]
+        }
+      ],
       "gap": "The recorded regression harness is strong for this slice; representative real-store cases and a publish/rollback lifecycle remain absent."
     },
     {
@@ -111,6 +267,37 @@
         "https://docs.gorgias.com/en-US/coach-ai-agent-and-give-feedback-to-improve-its-responses-500892",
         "https://support.zendesk.com/hc/en-us/articles/10412442245914-Workflow-recipe-Using-an-AI-agent-to-collect-customer-info-and-immediately-escalate-to-a-human-agent"
       ],
+      "controls": [
+        {
+          "id": "authentication_and_tenant_implementation",
+          "kind": "technical_check",
+          "check_ids": ["authentication_role_and_tenant_tests"]
+        },
+        {
+          "id": "authentication_role_enforcement_review",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/authentication_roles_review.json",
+          "minimum_sample_size": 6,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "unauthenticated_access_denied",
+            "role_boundary_enforced",
+            "reviewer_identity_attributed"
+          ]
+        },
+        {
+          "id": "tenant_isolation_security_review",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/tenant_isolation_review.json",
+          "minimum_sample_size": 6,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "cross_tenant_read_denied",
+            "cross_tenant_write_denied",
+            "tenant_context_audited"
+          ]
+        }
+      ],
       "gap": "No authentication, authorization, reviewer identity, tenancy, retention policy, or untrusted-network deployment boundary exists."
     },
     {
@@ -127,6 +314,37 @@
       "sources": [
         "https://docs.gorgias.com/en-US/ai-agent-explained-497772",
         "https://support.zendesk.com/hc/en-us/articles/8724978128282-Getting-started-with-AI-agents"
+      ],
+      "controls": [
+        {
+          "id": "live_read_only_contract_implementation",
+          "kind": "technical_check",
+          "check_ids": ["live_contract_integration_tests"]
+        },
+        {
+          "id": "read_only_platform_provider_contract",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/live_contract_read_only.json",
+          "minimum_sample_size": 10,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "read_only_case_retrieved",
+            "read_only_knowledge_retrieved",
+            "no_external_write_observed"
+          ]
+        },
+        {
+          "id": "live_contract_failure_boundaries",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/live_contract_failures.json",
+          "minimum_sample_size": 6,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "timeout_routes_safe",
+            "rate_limit_routes_safe",
+            "malformed_response_routes_safe"
+          ]
+        }
       ],
       "gap": "There is no live Gorgias, Shopify, carrier, channel, model, retrieval or authorized action adapter."
     },
@@ -146,6 +364,42 @@
         "https://docs.gorgias.com/en-US/review-your-ai-agent-performance-931052",
         "https://support.zendesk.com/hc/en-us/articles/8854858307610-What-are-the-conversation-statuses-for-AI-agents"
       ],
+      "controls": [
+        {
+          "id": "local_metric_contract",
+          "kind": "technical_check",
+          "check_ids": ["api_backend_tests"]
+        },
+        {
+          "id": "outcome_monitoring_implementation",
+          "kind": "technical_check",
+          "check_ids": ["representative_outcome_monitoring_tests"]
+        },
+        {
+          "id": "representative_outcome_definitions",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/outcome_definition_review.json",
+          "minimum_sample_size": 3,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "outcome_definitions_owner_approved",
+            "human_handoff_outcome_defined",
+            "quality_review_outcome_defined"
+          ]
+        },
+        {
+          "id": "quality_calibration_monitoring",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/quality_calibration.json",
+          "minimum_sample_size": 20,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "sample_routes_independently_reviewed",
+            "false_draft_rate_recorded",
+            "unsafe_action_count_zero"
+          ]
+        }
+      ],
       "gap": "Local counts, routes and latency exist, but there are no real conversations, outcome definitions, trends, drill-down, satisfaction, alerts or quality-calibration loop."
     },
     {
@@ -163,6 +417,43 @@
       "sources": [
         "https://docs.gorgias.com/en-US/how-gorgiass-ai-agent-works-1997817",
         "https://docs.gorgias.com/en-US/security-and-privacy-faq-for-gorgias-ai-agent-1997987"
+      ],
+      "controls": [
+        {
+          "id": "persisted_decision_and_citation_state",
+          "kind": "technical_check",
+          "check_ids": ["api_backend_tests"]
+        },
+        {
+          "id": "immutable_audit_privacy_implementation",
+          "kind": "technical_check",
+          "check_ids": ["immutable_audit_and_privacy_tests"]
+        },
+        {
+          "id": "immutable_reviewer_audit",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/immutable_review_audit.json",
+          "minimum_sample_size": 10,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "reviewer_identity_immutable",
+            "decision_history_append_only",
+            "citation_history_preserved"
+          ]
+        },
+        {
+          "id": "privacy_governance_review",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/privacy_governance_review.json",
+          "minimum_sample_size": 1,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "retention_owner_approved",
+            "deletion_path_reviewed",
+            "sensitive_data_redacted",
+            "access_boundary_reviewed"
+          ]
+        }
       ],
       "gap": "Decision/citation state is inspectable and fixtures contain no customer data, but review history is mutable and identity, encryption, retention, deletion, consent and privacy operations are absent."
     },
@@ -183,6 +474,42 @@
         "https://www.intercom.com/help/en/articles/7837535-fin-ai-agent-faqs",
         "https://docs.gorgias.com/en-US/how-ai-agent-improves-over-time-1993179"
       ],
+      "controls": [
+        {
+          "id": "local_health_and_migration_regression",
+          "kind": "technical_check",
+          "check_ids": ["api_backend_tests", "frontend_types_components_and_build"]
+        },
+        {
+          "id": "recovery_and_observability_implementation",
+          "kind": "technical_check",
+          "check_ids": ["recovery_and_observability_tests"]
+        },
+        {
+          "id": "production_monitoring_and_incident_operation",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/production_operations_review.json",
+          "minimum_sample_size": 1,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "health_signal_observed",
+            "alert_owner_acknowledged",
+            "incident_path_exercised"
+          ]
+        },
+        {
+          "id": "backup_restore_and_rollback_drill",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/recovery_drill.json",
+          "minimum_sample_size": 1,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "backup_created",
+            "restore_verified",
+            "rollback_time_recorded"
+          ]
+        }
+      ],
       "gap": "Health, migration ordering, locked builds and disposable PostgreSQL smoke pass; production logs, alerts, SLOs, backups, restore, rollback and incident operation do not."
     },
     {
@@ -200,6 +527,25 @@
       "sources": [
         "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html"
       ],
+      "controls": [
+        {
+          "id": "responsive_focus_and_state_regression",
+          "kind": "technical_check",
+          "check_ids": ["frontend_types_components_and_build", "browser_api_database_journey"]
+        },
+        {
+          "id": "independent_accessibility_review",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/accessibility_review.json",
+          "minimum_sample_size": 3,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "keyboard_path_completed",
+            "screen_reader_labels_reviewed",
+            "zoom_overflow_reviewed"
+          ]
+        }
+      ],
       "gap": "Responsive, focus, semantic state and overflow evidence exists, but no complete WCAG 2.2 AA, assistive-technology, zoom, contrast or browser-matrix audit exists."
     },
     {
@@ -216,6 +562,44 @@
       "sources": [
         "https://docs.gorgias.com/en-US/set-up-and-go-live-with-ai-agent-500219",
         "https://docs.gorgias.com/en-US/review-your-ai-agent-performance-931052"
+      ],
+      "controls": [
+        {
+          "id": "representative_operator_pilot",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/representative_operator_pilot.json",
+          "minimum_sample_size": 3,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "representative_task_completed",
+            "unsafe_action_absent",
+            "operator_decision_recorded"
+          ]
+        },
+        {
+          "id": "buyer_workflow_acceptance",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/buyer_workflow_acceptance.json",
+          "minimum_sample_size": 1,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "buyer_scope_accepted",
+            "acceptance_criteria_accepted",
+            "no_autonomous_send_confirmed"
+          ]
+        },
+        {
+          "id": "controlled_live_outcome_review",
+          "kind": "external_observation",
+          "record": "evaluation/market_evidence/controlled_live_outcomes.json",
+          "minimum_sample_size": 20,
+          "max_observation_age_days": 90,
+          "required_acceptance_check_ids": [
+            "live_outcomes_independently_labeled",
+            "unsafe_external_action_count_zero",
+            "known_failure_rate_recorded"
+          ]
+        }
       ],
       "gap": "No buyer interview, representative operator usability run, live store/channel, customer outcome, funded work or collected cash exists."
     }
